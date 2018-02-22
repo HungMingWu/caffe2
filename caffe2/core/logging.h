@@ -35,12 +35,7 @@
 #define CAFFE2_LOG_THRESHOLD INT_MIN
 #endif // CAFFE2_LOG_THRESHOLD
 
-// Below are different implementations for glog and non-glog cases.
-#ifdef CAFFE2_USE_GOOGLE_GLOG
-#include "caffe2/core/logging_is_google_glog.h"
-#else // !CAFFE2_USE_GOOGLE_GLOG
 #include "caffe2/core/logging_is_not_google_glog.h"
-#endif // CAFFE2_USE_GOOGLE_GLOG
 
 CAFFE2_DECLARE_int(caffe2_log_level);
 CAFFE2_DECLARE_bool(caffe2_use_fatal_for_enforce);
@@ -50,11 +45,7 @@ namespace caffe2 {
 bool InitCaffeLogging(int* argc, char** argv);
 
 constexpr bool IsUsingGoogleLogging() {
-#ifdef CAFFE2_USE_GOOGLE_GLOG
-  return true;
-#else
   return false;
-#endif
 }
 
 /**

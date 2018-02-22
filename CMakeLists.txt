@@ -40,7 +40,6 @@ option(USE_ATEN "Use ATen" OFF)
 option(USE_CUDA "Use Cuda" ON)
 option(USE_FFMPEG "Use ffmpeg" OFF)
 option(USE_GFLAGS "Use GFLAGS" ON)
-option(USE_GLOG "Use GLOG" ON)
 option(USE_GLOO "Use Gloo" ON)
 option(USE_LEVELDB "Use LEVELDB" ON)
 option(USE_LMDB "Use LMDB" ON)
@@ -214,7 +213,7 @@ endif()
 # ---[ Make configuration files for cmake to allow dependent libraries
 # easier access to Caffe2.
 
-if ((NOT USE_GLOG) OR (NOT USE_GFLAGS))
+if ((NOT USE_GFLAGS))
   message(WARNING
       "Generated cmake files are only fully tested if one builds "
       "with system glog, gflags, and protobuf. Other settings may "
@@ -248,8 +247,6 @@ if (BUILD_SHARED_LIBS)
       DESTINATION share/cmake/Caffe2
       COMPONENT dev)
   install(FILES
-      ${PROJECT_SOURCE_DIR}/cmake/public/cuda.cmake
-      ${PROJECT_SOURCE_DIR}/cmake/public/glog.cmake
       ${PROJECT_SOURCE_DIR}/cmake/public/gflags.cmake
       ${PROJECT_SOURCE_DIR}/cmake/public/protobuf.cmake
       ${PROJECT_SOURCE_DIR}/cmake/public/utils.cmake

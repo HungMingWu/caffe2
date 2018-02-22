@@ -39,7 +39,6 @@ static_assert(
 #cmakedefine CAFFE2_USE_EIGEN_FOR_BLAS
 #cmakedefine CAFFE2_USE_FBCODE
 #cmakedefine CAFFE2_USE_GFLAGS
-#cmakedefine CAFFE2_USE_GOOGLE_GLOG
 #cmakedefine CAFFE2_USE_MKL
 #cmakedefine CAFFE2_USE_NVTX
 
@@ -58,7 +57,6 @@ static_assert(
   {"USE_NCCL", "${USE_NCCL}"}, \
   {"USE_MPI", "${USE_MPI}"}, \
   {"USE_GFLAGS", "${USE_GFLAGS}"}, \
-  {"USE_GLOG", "${USE_GLOG}"}, \
   {"USE_GLOO", "${USE_GLOI}"}, \
   {"USE_NNPACK", "${USE_NNPACK}"}, \
   {"USE_OPENMP", "${USE_OPENMP}"}, \

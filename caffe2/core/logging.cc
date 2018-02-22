@@ -115,74 +115,6 @@ const void* EnforceNotMet::caller() const noexcept {
 }  // namespace caffe2
 
 
-#ifdef CAFFE2_USE_GOOGLE_GLOG
-
-#ifdef CAFFE2_USE_GFLAGS
-// GLOG's minloglevel
-CAFFE2_DECLARE_int(minloglevel);
-// GLOG's verbose log value.
-CAFFE2_DECLARE_int(v);
-// GLOG's logtostderr value
-CAFFE2_DECLARE_bool(logtostderr);
-
-#else
-
-using fLI::FLAGS_minloglevel;
-using fLI::FLAGS_v;
-using fLB::FLAGS_logtostderr;
-
-#endif // CAFFE2_USE_GFLAGS
-
-CAFFE2_DEFINE_int(caffe2_log_level, google::GLOG_ERROR,
-                  "The minimum log level that caffe2 will output.");
-
-// Google glog's api does not have an external function that allows one to check
-// if glog is initialized or not. It does have an internal function - so we are
-// declaring it here. This is a hack but has been used by a bunch of others too
-// (e.g. Torch).
-namespace google {
-namespace glog_internal_namespace_ {
-bool IsGoogleLoggingInitialized();
-}  // namespace glog_internal_namespace_
-}  // namespace google
-
-
-namespace caffe2 {
-bool InitCaffeLogging(int* argc, char** argv) {
-  if (*argc == 0) return true;
-#if !defined(_MSC_VER)
-  // This trick can only be used on UNIX platforms
-  if (!::google::glog_internal_namespace_::IsGoogleLoggingInitialized())
-#endif
-  {
-    ::google::InitGoogleLogging(argv[0]);
-#if !defined(_MSC_VER)
-  // This is never defined on Windows
-    ::google::InstallFailureSignalHandler();
-#endif
-  }
-  // If caffe2_log_level is set and is lower than the min log level by glog,
-  // we will transfer the caffe2_log_level setting to glog to override that.
-  FLAGS_minloglevel = std::min(FLAGS_caffe2_log_level, FLAGS_minloglevel);
-  // If caffe2_log_level is explicitly set, let's also turn on logtostderr.
-  if (FLAGS_caffe2_log_level < google::GLOG_ERROR) {
-    FLAGS_logtostderr = 1;
-  }
-  // Also, transfer the caffe2_log_level verbose setting to glog.
-  if (FLAGS_caffe2_log_level < 0) {
-    FLAGS_v = std::min(FLAGS_v, -FLAGS_caffe2_log_level);
-  }
-  return true;
-}
-
-void ShowLogInfoToStderr() {
-  FLAGS_logtostderr = 1;
-  FLAGS_minloglevel = std::min(FLAGS_minloglevel, google::GLOG_INFO);
-}
-}  // namespace caffe2
-
-#else  // !CAFFE2_USE_GOOGLE_GLOG
-
 #ifdef ANDROID
 #include <android/log.h>
 #endif // ANDROID
@@ -280,4 +212,3 @@ MessageLogger::~MessageLogger() {
 
 }  // namespace caffe2
 
-#endif  // !CAFFE2_USE_GOOGLE_GLOG

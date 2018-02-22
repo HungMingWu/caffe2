@@ -103,20 +103,6 @@ if(USE_GFLAGS)
   endif()
 endif()
 
-# ---[ Google-glog
-if(USE_GLOG)
-  include(cmake/public/glog.cmake)
-  if (TARGET glog::glog)
-    set(CAFFE2_USE_GOOGLE_GLOG 1)
-    list(APPEND Caffe2_PUBLIC_DEPENDENCY_LIBS glog::glog)
-  else()
-    message(WARNING
-        "glog is not found. Caffe2 will build without glog support but it is "
-        "strongly recommended that you install glog. Suppress this warning "
-        "with -DUSE_GLOG=OFF")
-    set(USE_GLOG OFF)
-  endif()
-endif()
 
 
 # ---[ Googletest and benchmark
