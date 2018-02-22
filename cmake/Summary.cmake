@@ -20,7 +20,6 @@ function (caffe2_print_configuration_summary)
   message(STATUS "")
 
   message(STATUS "  BUILD_BINARY          : ${BUILD_BINARY}")
-  message(STATUS "  BUILD_DOCS            : ${BUILD_DOCS}")
   message(STATUS "  BUILD_SHARED_LIBS     : ${BUILD_SHARED_LIBS}")
   message(STATUS "  BUILD_TEST            : ${BUILD_TEST}")
 

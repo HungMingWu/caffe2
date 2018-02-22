@@ -24,24 +24,6 @@ To update the operator catalog, a script must be run on the master branch and co
 1. `cd ~/c2master`
 2. `python caffe2/python/docs/github.py ~/c2docs/_docs/operators-catalogue.md`
 
-## Generating API Docs with Doxygen
-
-Support for generating the docs has been included in the CMake build process, but it is turned off by default. To trigger building of the docs use:
-
-1. `cd ~/c2master`
-2. `mkdir build && cd build`
-3. `cmake -DBUILD_DOCS=ON .. && make`
-
-This will create a docs subfolder in the build folder. You can launch either API's web page docs by opening the index.html file found at `build/docs/doxygen-c/html/index.html` or `build/docs/doxygen-python/html/index.html`.
-
-To push to caffe2.ai, copy these from the build directory to your docs checkout:
-1. `cd ~/c2docs`
-2. `rm -rf doxygen-c`
-3. `rm -rf doxygen-python`
-4. `cp -r ~/c2master/build/docs/doxygen-c .`
-5. `cp -r ~/c2master/build/docs/doxygen-python .`
-6. `git add -A .`
-
 ### Install Doxygen
 
 You will need to install Doxygen to build Caffe2 with the API docs.
