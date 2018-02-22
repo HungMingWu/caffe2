@@ -52,7 +52,6 @@ static_assert(
   {"BUILD_TYPE", "${CMAKE_BUILD_TYPE}"}, \
   {"BLAS", "${BLAS}"}, \
   {"USE_ATEN", "${USE_ATEN}"}, \
-  {"USE_CUDA", "${USE_CUDA}"}, \
   {"USE_NNPACK", "${USE_NNPACK}"}, \
   {"USE_OPENMP", "${USE_OPENMP}"}, \
   {"FORCE_FALLBACK_CUDA_MPI", "${CAFFE2_FORCE_FALLBACK_CUDA_MPI}"}, \

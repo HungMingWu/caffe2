@@ -8,7 +8,6 @@ add_subdirectory(proto)
 
 add_subdirectory(contrib)
 add_subdirectory(core)
-add_subdirectory(cuda_rtc)
 add_subdirectory(db)
 add_subdirectory(distributed)
 # add_subdirectory(experiments) # note, we may remove this folder at some point
@@ -82,36 +81,9 @@ install(TARGETS caffe2 EXPORT Caffe2Targets DESTINATION lib)
 caffe2_interface_library(caffe2 caffe2_library)
 list(APPEND Caffe2_MAIN_LIBS caffe2_library)
 
-# ---[ CUDA library.
-if(USE_CUDA)
-  # A hack to deal with cuda library dependencies and modern CMake: the
-  # CUDA_ADD_LIBRARY includes a target_link_libraries, and as a result,
-  # one cannot use PUBLIC/PRIVATE/INTERFACE for the target anymore. This
-  # hack adds the PRIVATE keywords to CUDA_LIBRARIES so we can deal with
-  # it. We will then manually add the cudart library as interface libs.
-  set(__tmp ${CUDA_LIBRARIES})
-  set(CUDA_LIBRARIES PRIVATE ${CUDA_LIBRARIES})
-  CUDA_ADD_LIBRARY(caffe2_gpu ${Caffe2_GPU_SRCS})
-  set(CUDA_LIBRARIES ${__tmp})
-  target_link_libraries(caffe2_gpu INTERFACE caffe2::cudart)
-
-  target_include_directories(
-      caffe2_gpu INTERFACE $<INSTALL_INTERFACE:include>)
-  target_link_libraries(
-      caffe2_gpu PUBLIC caffe2 ${Caffe2_PUBLIC_CUDA_DEPENDENCY_LIBS})
-  target_link_libraries(
-      caffe2_gpu PRIVATE ${Caffe2_CUDA_DEPENDENCY_LIBS})
-  caffe2_interface_library(caffe2_gpu caffe2_gpu_library)
-  list(APPEND Caffe2_MAIN_LIBS caffe2_gpu_library)
-  install(TARGETS caffe2_gpu EXPORT Caffe2Targets DESTINATION lib)
-endif()
-
 # ---[ Test binaries.
 if (BUILD_TEST)
   set(Caffe2_ALL_TEST_SRCS ${Caffe2_CPU_TEST_SRCS})
-  if (USE_CUDA)
-    list(APPEND Caffe2_ALL_TEST_SRCS ${Caffe2_GPU_TEST_SRCS})
-  endif()
 
   foreach(test_src ${Caffe2_ALL_TEST_SRCS})
     get_filename_component(test_name ${test_src} NAME_WE)
@@ -121,9 +93,6 @@ if (BUILD_TEST)
     # result, we will explicitly link the test against the Caffe2 dependency
     # libs.
     target_link_libraries(${test_name} ${Caffe2_MAIN_LIBS} gtest_main)
-    if (USE_CUDA)
-      target_link_libraries(${test_name} ${Caffe2_CUDA_DEPENDENCY_LIBS})
-    endif()
     if (${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} GREATER 3.0)
       target_compile_features(${test_name} PRIVATE cxx_range_for)
     endif()

@@ -34,7 +34,6 @@ option(BUILD_TEST "Build C++ test binaries (need gtest and gbenchmark)" ON)
 option(USE_ACL "Use ARM Compute Library" OFF)
 option(USE_ASAN "Use Address Sanitizer" OFF)
 option(USE_ATEN "Use ATen" OFF)
-option(USE_CUDA "Use Cuda" ON)
 option(USE_LMDB "Use LMDB" ON)
 option(USE_NNPACK "Use NNPACK" ON)
 option(USE_OBSERVERS "Use Observer Library" OFF)
@@ -156,12 +155,6 @@ if(NOT TARGET caffe2_uninstall)
   add_custom_target(caffe2_uninstall
       COMMAND ${CMAKE_COMMAND} -P
       ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
-endif()
-
-if (USE_CUDA)
-  # TODO: check if we should include other cuda dependency libraries
-  # to the interface as well.
-
 endif()
 
 # Note(jiayq): when building static libraries, all PRIVATE dependencies

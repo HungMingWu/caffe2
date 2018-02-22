@@ -1,7 +1,5 @@
 if(USE_ATEN)
-  if(NOT USE_CUDA)
-    set(NO_CUDA ON)
-  endif()
+  set(NO_CUDA ON)
   set(TORCH_CUDA_ARCH_LIST "3.5 5.2 6.0 6.1+PTX")
   set(TORCH_NVCC_FLAGS "-Xfatbin -compress-all")
   set(CMAKE_POSITION_INDEPENDENT_CODE ON)

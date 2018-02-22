@@ -197,33 +197,6 @@ if(ANDROID)
   list(APPEND Caffe2_DEPENDENCY_LIBS log)
 endif()
 
-# ---[ CUDA
-if(USE_CUDA)
-  include(cmake/public/cuda.cmake)
-  if(CAFFE2_FOUND_CUDA)
-    # A helper variable recording the list of Caffe2 dependent librareis
-    # caffe2::cudart is dealt with separately, due to CUDA_ADD_LIBRARY
-    # design reason (it adds CUDA_LIBRARIES itself).
-    set(Caffe2_PUBLIC_CUDA_DEPENDENCY_LIBS
-        caffe2::cuda caffe2::curand caffe2::cublas caffe2::cudnn caffe2::nvrtc)
-  else()
-    message(WARNING
-        "Not compiling with CUDA. Suppress this warning with "
-        "-DUSE_CUDA=OFF.")
-    set(USE_CUDA OFF)
-  endif()
-endif()
-
-# ---[ CUB
-if(USE_CUDA)
-  find_package(CUB)
-  if(CUB_FOUND)
-    include_directories(${CUB_INCLUDE_DIRS})
-  else()
-    include_directories(${PROJECT_SOURCE_DIR}/third_party/cub)
-  endif()
-endif()
-
 # ---[ profiling
 if(USE_PROF)
   find_package(htrace)

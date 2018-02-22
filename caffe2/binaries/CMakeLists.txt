@@ -8,23 +8,6 @@ caffe2_binary_target("run_plan.cc")
 caffe2_binary_target("speed_benchmark.cc")
 caffe2_binary_target("split_db.cc")
 
-if (USE_THREADS)
-  caffe2_binary_target("db_throughput.cc")
-  target_link_libraries(db_throughput ${CMAKE_THREAD_LIBS_INIT})
-endif()
-
-if (USE_CUDA)
-  caffe2_binary_target("inspect_gpus.cc")
-  target_link_libraries(inspect_gpus ${CUDA_LIBRARIES})
-  caffe2_binary_target("print_core_object_sizes.cc")
-
-  if (BUILD_TEST)
-    # Core overhead benchmark
-    caffe2_binary_target("core_overhead_benchmark.cc")
-    target_link_libraries(core_overhead_benchmark benchmark ${CUDA_curand_LIBRARY})
-  endif()
-endif()
-
 if (USE_ZMQ)
   caffe2_binary_target("zmq_feeder.cc")
   target_link_libraries(zmq_feeder ${ZMQ_LIBRARIES})
