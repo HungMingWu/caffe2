@@ -329,52 +329,6 @@ if(USE_CUDA)
   endif()
 endif()
 
-if(USE_GLOO)
-  if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-    message(WARNING "Gloo can only be used on Linux.")
-    set(USE_GLOO OFF)
-  elseif(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
-    message(WARNING "Gloo can only be used on 64-bit systems.")
-    set(USE_GLOO OFF)
-  else()
-    set(Gloo_USE_CUDA ${USE_CUDA})
-    find_package(Gloo)
-    if(Gloo_FOUND)
-      include_directories(${Gloo_INCLUDE_DIRS})
-      list(APPEND Caffe2_DEPENDENCY_LIBS gloo)
-    else()
-      set(GLOO_INSTALL OFF CACHE BOOL "" FORCE)
-      set(GLOO_STATIC_OR_SHARED STATIC CACHE STRING "" FORCE)
-
-      # Temporarily override variables to avoid building Gloo tests/benchmarks
-      set(__BUILD_TEST ${BUILD_TEST})
-      set(__BUILD_BENCHMARK ${BUILD_BENCHMARK})
-      set(BUILD_TEST OFF)
-      set(BUILD_BENCHMARK OFF)
-      add_subdirectory(${PROJECT_SOURCE_DIR}/third_party/gloo)
-      # Here is a little bit hacky. We have to put PROJECT_BINARY_DIR in front
-      # of PROJECT_SOURCE_DIR with/without conda system. The reason is that
-      # gloo generates a new config.h in the binary diretory.
-      include_directories(BEFORE SYSTEM ${PROJECT_SOURCE_DIR}/third_party/gloo)
-      include_directories(BEFORE SYSTEM ${PROJECT_BINARY_DIR}/third_party/gloo)
-      set(BUILD_TEST ${__BUILD_TEST})
-      set(BUILD_BENCHMARK ${__BUILD_BENCHMARK})
-
-      # Add explicit dependency if NCCL is built from third_party.
-      # Without dependency, make -jN with N>1 can fail if the NCCL build
-      # hasn't finished when CUDA targets are linked.
-      if(NCCL_EXTERNAL)
-        add_dependencies(gloo_cuda nccl_external)
-      endif()
-    endif()
-    # Pick the right dependency depending on USE_CUDA
-    list(APPEND Caffe2_DEPENDENCY_LIBS gloo)
-    if(USE_CUDA)
-      list(APPEND Caffe2_CUDA_DEPENDENCY_LIBS gloo_cuda)
-    endif()
-  endif()
-endif()
-
 # ---[ profiling
 if(USE_PROF)
   find_package(htrace)
