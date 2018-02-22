@@ -39,7 +39,6 @@ option(USE_ASAN "Use Address Sanitizer" OFF)
 option(USE_ATEN "Use ATen" OFF)
 option(USE_CUDA "Use Cuda" ON)
 option(USE_FFMPEG "Use ffmpeg" OFF)
-option(USE_GFLAGS "Use GFLAGS" ON)
 option(USE_GLOO "Use Gloo" ON)
 option(USE_LEVELDB "Use LEVELDB" ON)
 option(USE_LMDB "Use LMDB" ON)
@@ -208,16 +207,6 @@ if(NOT TARGET caffe2_uninstall)
   add_custom_target(caffe2_uninstall
       COMMAND ${CMAKE_COMMAND} -P
       ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
-endif()
-
-# ---[ Make configuration files for cmake to allow dependent libraries
-# easier access to Caffe2.
-
-if ((NOT USE_GFLAGS))
-  message(WARNING
-      "Generated cmake files are only fully tested if one builds "
-      "with system glog, gflags, and protobuf. Other settings may "
-      "generate files that are not well tested.")
 endif()
 
 if (USE_CUDA)

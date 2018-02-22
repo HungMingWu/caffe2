@@ -23,31 +23,6 @@
 
 namespace caffe2 {
 
-#ifdef CAFFE2_USE_GFLAGS
-
-void SetUsageMessage(const string& str) {
-  if (UsageMessage() != nullptr) {
-    // Usage message has already been set, so we will simply return.
-    return;
-  }
-  gflags::SetUsageMessage(str);
-}
-
-const char* UsageMessage() {
-  return gflags::ProgramUsage();
-}
-
-bool ParseCaffeCommandLineFlags(int* pargc, char*** pargv) {
-  if (*pargc == 0) return true;
-  return gflags::ParseCommandLineFlags(pargc, pargv, true);
-}
-
-bool CommandLineFlagsHasBeenParsed() {
-  // There is no way we query gflags right now, so we will simply return true.
-  return true;
-}
-
-#else  // CAFFE2_USE_GFLAGS
 
 
 CAFFE_DEFINE_REGISTRY(Caffe2FlagsRegistry, Caffe2FlagParser, const string&);
@@ -228,6 +203,5 @@ bool Caffe2FlagParser::Parse<bool>(const string& content, bool* value) {
   }
 }
 
-#endif  // CAFFE2_USE_GFLAGS
 
 }  // namespace caffe2

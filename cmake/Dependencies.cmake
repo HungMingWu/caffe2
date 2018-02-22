@@ -88,23 +88,6 @@ if (ANDROID)
   list(APPEND Caffe2_DEPENDENCY_LIBS cpufeatures)
 endif()
 
-# ---[ gflags
-if(USE_GFLAGS)
-  include(cmake/public/gflags.cmake)
-  if (TARGET gflags)
-    set(CAFFE2_USE_GFLAGS 1)
-    list(APPEND Caffe2_PUBLIC_DEPENDENCY_LIBS gflags)
-  else()
-    message(WARNING
-        "gflags is not found. Caffe2 will build without gflags support but "
-        "it is strongly recommended that you install gflags. Suppress this "
-        "warning with -DUSE_GFLAGS=OFF")
-    set(USE_GFLAGS OFF)
-  endif()
-endif()
-
-
-
 # ---[ Googletest and benchmark
 if(BUILD_TEST)
   set(TEMP_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS})

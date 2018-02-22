@@ -38,7 +38,6 @@ static_assert(
 #cmakedefine CAFFE2_USE_ACCELERATE
 #cmakedefine CAFFE2_USE_EIGEN_FOR_BLAS
 #cmakedefine CAFFE2_USE_FBCODE
-#cmakedefine CAFFE2_USE_GFLAGS
 #cmakedefine CAFFE2_USE_MKL
 #cmakedefine CAFFE2_USE_NVTX
 
@@ -56,7 +55,6 @@ static_assert(
   {"USE_CUDA", "${USE_CUDA}"}, \
   {"USE_NCCL", "${USE_NCCL}"}, \
   {"USE_MPI", "${USE_MPI}"}, \
-  {"USE_GFLAGS", "${USE_GFLAGS}"}, \
   {"USE_GLOO", "${USE_GLOI}"}, \
   {"USE_NNPACK", "${USE_NNPACK}"}, \
   {"USE_OPENMP", "${USE_OPENMP}"}, \
