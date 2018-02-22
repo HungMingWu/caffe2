@@ -213,30 +213,6 @@ else()
   include_directories(${PROJECT_SOURCE_DIR}/third_party/eigen)
 endif()
 
-# ---[ Python + Numpy
-if(BUILD_PYTHON)
-  set(Python_ADDITIONAL_VERSIONS 2.8 2.7 2.6)
-  find_package(PythonInterp 2.7)
-  find_package(PythonLibs 2.7)
-  find_package(NumPy REQUIRED)
-  # Observers are required in the python build
-  set(USE_OBSERVERS ON)
-  if(PYTHONINTERP_FOUND AND PYTHONLIBS_FOUND AND NUMPY_FOUND)
-    include_directories(${PYTHON_INCLUDE_DIRS} ${NUMPY_INCLUDE_DIR})
-  else()
-    message(WARNING "Python dependencies not met. Not compiling with python. Suppress this warning with -DBUILD_PYTHON=OFF")
-    set(BUILD_PYTHON OFF)
-  endif()
-endif()
-
-# ---[ pybind11
-find_package(pybind11)
-if(pybind11_FOUND)
-  include_directories(${pybind11_INCLUDE_DIRS})
-else()
-  include_directories(${PROJECT_SOURCE_DIR}/third_party/pybind11/include)
-endif()
-
 # ---[ MPI
 if(USE_MPI)
   find_package(MPI)

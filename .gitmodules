@@ -1,6 +1,3 @@
-[submodule "third_party/pybind11"]
-	path = third_party/pybind11
-	url = https://github.com/pybind/pybind11.git
 [submodule "third_party/nccl"]
 	path = third_party/nccl
 	url = https://github.com/nvidia/nccl.git
@@ -52,12 +49,3 @@
 [submodule "third_party/python-peachpy"]
 	path = third_party/python-peachpy
 	url = https://github.com/Maratyszcza/PeachPy.git
-[submodule "third_party/python-six"]
-	path = third_party/python-six
-	url = https://github.com/benjaminp/six.git
-[submodule "third_party/ComputeLibrary"]
-	path = third_party/ComputeLibrary
-	url = https://github.com/ARM-software/ComputeLibrary.git
-[submodule "third_party/onnx"]
-	path = third_party/onnx
-	url = https://github.com/onnx/onnx.git
