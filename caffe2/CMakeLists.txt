@@ -13,7 +13,6 @@ add_subdirectory(db)
 add_subdirectory(distributed)
 # add_subdirectory(experiments) # note, we may remove this folder at some point
 add_subdirectory(mkl)
-add_subdirectory(mobile)
 add_subdirectory(observers)
 add_subdirectory(operators)
 add_subdirectory(perfkernels)

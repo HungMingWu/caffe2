@@ -248,13 +248,6 @@ if(USE_PROF)
   endif()
 endif()
 
-if (USE_METAL)
-  if (NOT IOS)
-    message(WARNING "Metal is only used in ios builds.")
-    set(USE_METAL OFF)
-  endif()
-endif()
-
 if (USE_ATEN)
   list(APPEND Caffe2_DEPENDENCY_LIBS aten_op_header_gen ATen)
   include_directories(${PROJECT_BINARY_DIR}/caffe2/contrib/aten/aten/src/ATen)
