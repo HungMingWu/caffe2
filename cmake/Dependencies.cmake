@@ -214,20 +214,6 @@ if(USE_CUDA)
   endif()
 endif()
 
-# ---[ NCCL
-if(USE_NCCL)
-  if(NOT USE_CUDA)
-    message(WARNING "If not using cuda, one should not use NCCL either.")
-    set(USE_NCCL OFF)
-  elseif(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-    message(WARNING "NCCL is currently only supported under Linux.")
-    set(USE_NCCL OFF)
-  else()
-    include("cmake/External/nccl.cmake")
-    list(APPEND Caffe2_CUDA_DEPENDENCY_LIBS __caffe2_nccl)
-  endif()
-endif()
-
 # ---[ CUB
 if(USE_CUDA)
   find_package(CUB)
