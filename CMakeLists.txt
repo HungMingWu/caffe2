@@ -228,9 +228,6 @@ if (BUILD_SHARED_LIBS)
       DESTINATION share/cmake/Caffe2
       COMPONENT dev)
   install(FILES
-      ${PROJECT_SOURCE_DIR}/cmake/public/gflags.cmake
-      ${PROJECT_SOURCE_DIR}/cmake/public/protobuf.cmake
-      ${PROJECT_SOURCE_DIR}/cmake/public/utils.cmake
       DESTINATION share/cmake/Caffe2/public
       COMPONENT dev)
   install(EXPORT Caffe2Targets DESTINATION share/cmake/Caffe2
