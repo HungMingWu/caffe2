@@ -7,11 +7,6 @@ if(USE_THREADS)
   list(APPEND Caffe2_DEPENDENCY_LIBS ${CMAKE_THREAD_LIBS_INIT})
 endif()
 
-# ---[ protobuf
-if(USE_LITE_PROTO)
-  set(CAFFE2_USE_LITE_PROTO 1)
-endif()
-
 # ---[ git: used to generate git build string.
 find_package(Git)
 if(GIT_FOUND)

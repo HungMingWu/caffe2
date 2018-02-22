@@ -40,7 +40,6 @@ static_assert(
 #cmakedefine CAFFE2_USE_FBCODE
 #cmakedefine CAFFE2_USE_GFLAGS
 #cmakedefine CAFFE2_USE_GOOGLE_GLOG
-#cmakedefine CAFFE2_USE_LITE_PROTO
 #cmakedefine CAFFE2_USE_MKL
 #cmakedefine CAFFE2_USE_NVTX
 
@@ -72,7 +71,6 @@ static_assert(
   {"USE_EXCEPTION_PTR", "${CAFFE2_USE_EXCEPTION_PTR}"}, \
   {"USE_ACCELERATE", "${CAFFE2_USE_ACCELERATE}"}, \
   {"USE_EIGEN_FOR_BLAS", "${CAFFE2_USE_EIGEN_FOR_BLAS}"}, \
-  {"USE_LITE_PROTO", "${CAFFE2_USE_LITE_PROTO}"}, \
   {"USE_MKL", "${CAFFE2_USE_MKL}"}, \
   {"USE_NVTX", "${CAFFE2_USE_NVTX}"}, \
 }

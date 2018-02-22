@@ -23,9 +23,7 @@
 #include <google/protobuf/io/coded_stream.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 
-#ifndef CAFFE2_USE_LITE_PROTO
 #include <google/protobuf/text_format.h>
-#endif  // !CAFFE2_USE_LITE_PROTO
 
 #include "caffe2/core/logging.h"
 
@@ -93,48 +91,6 @@ bool WriteStringToFile(const string& str, const char* filename) {
 // IO-specific proto functions: we will deal with the protocol buffer lite and
 // full versions differently.
 
-#ifdef CAFFE2_USE_LITE_PROTO
-
-// Lite runtime.
-
-namespace {
-class IfstreamInputStream : public ::google::protobuf::io::CopyingInputStream {
- public:
-  explicit IfstreamInputStream(const string& filename)
-      : ifs_(filename.c_str(), std::ios::in | std::ios::binary) {}
-  ~IfstreamInputStream() { ifs_.close(); }
-
-  int Read(void* buffer, int size) {
-    if (!ifs_) {
-      return -1;
-    }
-    ifs_.read(static_cast<char*>(buffer), size);
-    return ifs_.gcount();
-  }
-
- private:
-  std::ifstream ifs_;
-};
-}  // namespace
-
-bool ReadProtoFromBinaryFile(const char* filename, MessageLite* proto) {
-  ::google::protobuf::io::CopyingInputStreamAdaptor stream(
-      new IfstreamInputStream(filename));
-  stream.SetOwnsCopyingStream(true);
-  // Total bytes hard limit / warning limit are set to 1GB and 512MB
-  // respectively.
-  ::google::protobuf::io::CodedInputStream coded_stream(&stream);
-  coded_stream.SetTotalBytesLimit(1024LL << 20, 512LL << 20);
-  return proto->ParseFromCodedStream(&coded_stream);
-}
-
-void WriteProtoToBinaryFile(
-    const MessageLite& /*proto*/,
-    const char* /*filename*/) {
-  LOG(FATAL) << "Not implemented yet.";
-}
-
-#else  // CAFFE2_USE_LITE_PROTO
 
 // Full protocol buffer.
 
@@ -194,8 +150,6 @@ void WriteProtoToBinaryFile(const MessageLite& proto, const char* filename) {
   raw_output.reset();
   close(fd);
 }
-
-#endif  // CAFFE2_USE_LITE_PROTO
 
 ArgumentHelper::ArgumentHelper(const OperatorDef& def) {
   for (auto& arg : def.arg()) {

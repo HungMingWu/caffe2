@@ -51,11 +51,9 @@ int main(int argc, char** argv) {
 
   for (const auto& pair : *caffe2::gDeviceTypeRegistry()) {
     std::cout << "Device type " << pair.first
-#ifndef CAFFE2_USE_LITE_PROTO
               << " (" << caffe2::DeviceType_Name(
                              static_cast<caffe2::DeviceType>(pair.first))
               << ")"
-#endif
               << std::endl;
     for (const auto& key : pair.second->Keys()) {
       std::cout << "\t(schema: " << HasSchema(key) << ", doc: " << HasDoc(key)

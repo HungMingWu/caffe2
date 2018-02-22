@@ -17,11 +17,7 @@
 #ifndef CAFFE2_UTILS_PROTO_UTILS_H_
 #define CAFFE2_UTILS_PROTO_UTILS_H_
 
-#ifdef CAFFE2_USE_LITE_PROTO
-#include <google/protobuf/message_lite.h>
-#else // CAFFE2_USE_LITE_PROTO
 #include <google/protobuf/message.h>
-#endif  // !CAFFE2_USE_LITE_PROTO
 
 #include "caffe2/core/logging.h"
 #include "caffe2/proto/caffe2.pb.h"
@@ -59,48 +55,6 @@ inline void WriteProtoToBinaryFile(const MessageLite& proto,
   return WriteProtoToBinaryFile(proto, filename.c_str());
 }
 
-#ifdef CAFFE2_USE_LITE_PROTO
-
-inline string ProtoDebugString(const MessageLite& proto) {
-  return proto.SerializeAsString();
-}
-
-// Text format MessageLite wrappers: these functions do nothing but just
-// allowing things to compile. It will produce a runtime error if you are using
-// MessageLite but still want text support.
-inline bool ReadProtoFromTextFile(
-    const char* /*filename*/,
-    MessageLite* /*proto*/) {
-  LOG(FATAL) << "If you are running lite version, you should not be "
-                  << "calling any text-format protobuffers.";
-  return false;  // Just to suppress compiler warning.
-}
-inline bool ReadProtoFromTextFile(const string filename, MessageLite* proto) {
-  return ReadProtoFromTextFile(filename.c_str(), proto);
-}
-
-inline void WriteProtoToTextFile(
-    const MessageLite& /*proto*/,
-    const char* /*filename*/) {
-  LOG(FATAL) << "If you are running lite version, you should not be "
-                  << "calling any text-format protobuffers.";
-}
-inline void WriteProtoToTextFile(const MessageLite& proto,
-                                 const string& filename) {
-  return WriteProtoToTextFile(proto, filename.c_str());
-}
-
-inline bool ReadProtoFromFile(const char* filename, MessageLite* proto) {
-  return (ReadProtoFromBinaryFile(filename, proto) ||
-          ReadProtoFromTextFile(filename, proto));
-}
-
-inline bool ReadProtoFromFile(const string& filename, MessageLite* proto) {
-  return ReadProtoFromFile(filename.c_str(), proto);
-}
-
-#else  // CAFFE2_USE_LITE_PROTO
-
 using ::google::protobuf::Message;
 
 inline string ProtoDebugString(const Message& proto) {
@@ -126,8 +80,6 @@ inline bool ReadProtoFromFile(const char* filename, Message* proto) {
 inline bool ReadProtoFromFile(const string& filename, Message* proto) {
   return ReadProtoFromFile(filename.c_str(), proto);
 }
-
-#endif  // CAFFE2_USE_LITE_PROTO
 
 template <
     class IterableInputs = std::initializer_list<string>,
