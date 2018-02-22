@@ -1,33 +1,3 @@
-# Finds Google Protocol Buffers library and compilers and extends
-# the standard cmake script with version and python generation support
-macro(custom_protobuf_find)
-  message(STATUS "Use custom protobuf build.")
-  option(protobuf_BUILD_TESTS "" OFF)
-  option(protobuf_BUILD_EXAMPLES "" OFF)
-  if (APPLE)
-    # Protobuf generated files triggers a deprecated atomic operation warning
-    # so we turn it off here.
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
-  endif()
-  # If we are building Caffe2 as shared libs, we will also build protobuf as
-  # shared libs.
-  set(protobuf_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS})
-  # We will make sure that protobuf and caffe2 uses the same msvc runtime.
-  set(protobuf_MSVC_STATIC_RUNTIME ${CAFFE2_USE_MSVC_STATIC_RUNTIME})
-  if (MSVC AND BUILD_SHARED_LIBS)
-    add_definitions(-DPROTOBUF_USE_DLLS)
-  endif()
-  add_subdirectory(${PROJECT_SOURCE_DIR}/third_party/protobuf/cmake)
-
-  # Protobuf "namespaced" target is only added post protobuf 3.5.1. As a
-  # result, for older versions, we will manually add alias.
-  if (NOT TARGET protobuf::libprotobuf)
-    add_library(protobuf::libprotobuf ALIAS libprotobuf)
-    add_library(protobuf::libprotobuf-lite ALIAS libprotobuf-lite)
-    add_executable(protobuf::protoc ALIAS protoc)
-  endif()
-endmacro()
-
 # Main entry for protobuf. If we are building on Android, iOS or we have hard
 # coded BUILD_CUSTOM_PROTOBUF, we will hard code the use of custom protobuf
 # in the submodule.
@@ -35,7 +5,6 @@ if (ANDROID OR IOS)
   message(STATUS
       "For Android and iOS cross compilation, I am automatically using "
       "custom protobuf under third party.")
-  custom_protobuf_find()
   # Unfortunately, new protobuf does not support libprotoc and protoc
   # cross-compilation so we will need to exclude it.
   # The problem of using EXCLUDE_FROM_ALL is that one is not going to be able
@@ -48,7 +17,6 @@ if (ANDROID OR IOS)
       EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1)
 elseif (BUILD_CUSTOM_PROTOBUF)
   message(STATUS "Building using own protobuf under third_party per request.")
-  custom_protobuf_find()
 else()
   include(cmake/public/protobuf.cmake)
 endif()
@@ -59,7 +27,6 @@ if ((NOT TARGET protobuf::libprotobuf) AND (NOT TARGET protobuf::libprotobuf-lit
       "own protobuf under third_party. Note that this behavior may change in "
       "the future, and you will need to specify -DBUILD_CUSTOM_PROTOBUF=ON "
       "explicitly.")
-  custom_protobuf_find()
 
   # TODO(jiayq): enable this in the future, when Jenkins Mac support is
   # properly set up with protobuf installs.
