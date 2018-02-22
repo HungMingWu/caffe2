@@ -239,15 +239,3 @@ endif()
 if (${CAFFE2_CMAKE_USE_LOCAL_FINDCUDA})
   list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/Modules_CUDA_fix)
 endif()
-
-if (USE_NATIVE_ARCH)
-  check_cxx_compiler_flag("-march=native" COMPILER_SUPPORTS_MARCH_NATIVE)
-  if (COMPILER_SUPPORTS_MARCH_NATIVE)
-    add_definitions("-march=native")
-  else()
-    message(
-        WARNING
-        "Your compiler does not support -march=native. Turn off this warning "
-        "by setting -DUSE_NATIVE_ARCH=OFF.")
-  endif()
-endif()
