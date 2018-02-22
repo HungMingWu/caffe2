@@ -13,7 +13,7 @@ Note that you might need to uninstall existing Eigen and pybind11 packages due t
 
     brew install openblas glog gtest automake protobuf leveled lmdb
     mkdir build && cd build
-    cmake .. -DBLAS=OpenBLAS -DUSE_OPENCV=off
+    cmake .. -DBLAS=OpenBLAS
     make
 
 #### Ubuntu

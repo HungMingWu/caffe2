@@ -129,19 +129,15 @@ if(USE_LMDB)
   endif()
 endif()
 
-# ---[ LevelDB
-# ---[ Snappy
-if(USE_LEVELDB)
-  find_package(LevelDB)
-  find_package(Snappy)
-  if(LEVELDB_FOUND AND SNAPPY_FOUND)
-    include_directories(${LevelDB_INCLUDE})
-    list(APPEND Caffe2_DEPENDENCY_LIBS ${LevelDB_LIBRARIES})
-    include_directories(${Snappy_INCLUDE_DIR})
-    list(APPEND Caffe2_DEPENDENCY_LIBS ${Snappy_LIBRARIES})
+# ---[ Rocksdb
+if(USE_ROCKSDB)
+  find_package(RocksDB)
+  if(ROCKSDB_FOUND)
+    include_directories(${RocksDB_INCLUDE_DIR})
+    list(APPEND Caffe2_DEPENDENCY_LIBS ${RocksDB_LIBRARIES})
   else()
-    message(WARNING "Not compiling with LevelDB. Suppress this warning with -DUSE_LEVELDB=OFF")
-    set(USE_LEVELDB OFF)
+    message(WARNING "Not compiling with RocksDB. Suppress this warning with -DUSE_ROCKSDB=OFF")
+    set(USE_ROCKSDB OFF)
   endif()
 endif()
 
@@ -167,38 +163,6 @@ if(USE_REDIS)
     message(WARNING "Not compiling with Redis. Suppress this warning with -DUSE_REDIS=OFF")
     set(USE_REDIS OFF)
   endif()
-endif()
-
-
-# ---[ OpenCV
-if(USE_OPENCV)
-  # OpenCV 3
-  find_package(OpenCV 3 QUIET COMPONENTS core highgui imgproc imgcodecs)
-  if(NOT OpenCV_FOUND)
-    # OpenCV 2
-    find_package(OpenCV QUIET COMPONENTS core highgui imgproc)
-  endif()
-  if(OpenCV_FOUND)
-    include_directories(${OpenCV_INCLUDE_DIRS})
-    list(APPEND Caffe2_DEPENDENCY_LIBS ${OpenCV_LIBS})
-    message(STATUS "OpenCV found (${OpenCV_CONFIG_PATH})")
-  else()
-    message(WARNING "Not compiling with OpenCV. Suppress this warning with -DUSE_OPENCV=OFF")
-    set(USE_OPENCV OFF)
-  endif()
-endif()
-
-# ---[ FFMPEG
-if(USE_FFMPEG)
-  find_package(FFmpeg REQUIRED)
-  if (FFMPEG_FOUND)
-    message("Found FFMPEG/LibAV libraries")
-    include_directories(${FFMPEG_INCLUDE_DIR})
-    list(APPEND Caffe2_DEPENDENCY_LIBS ${FFMPEG_LIBRARIES})
-  else ()
-    message("Not compiling with FFmpeg. Suppress this warning with -DUSE_FFMPEG=OFF")
-    set(USE_FFMPEG OFF)
-  endif ()
 endif()
 
 # ---[ EIGEN

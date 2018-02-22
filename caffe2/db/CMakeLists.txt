@@ -15,10 +15,6 @@ if (USE_LMDB)
   list(APPEND Caffe2_CPU_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/lmdb.cc")
 endif()
 
-if (USE_LEVELDB)
-  list(APPEND Caffe2_CPU_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/leveldb.cc")
-endif()
-
 if (USE_ZMQ)
   list(APPEND Caffe2_CPU_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/zmqdb.cc")
 endif()

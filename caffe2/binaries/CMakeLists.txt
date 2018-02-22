@@ -30,17 +30,5 @@ if (USE_ZMQ)
   target_link_libraries(zmq_feeder ${ZMQ_LIBRARIES})
 endif()
 
-if (USE_OPENCV AND USE_LEVELDB)
-  caffe2_binary_target("convert_encoded_to_raw_leveldb.cc")
-  target_link_libraries(
-      convert_encoded_to_raw_leveldb
-      ${OpenCV_LIBS} ${LevelDB_LIBRARIES} ${Snappy_LIBRARIES})
-endif()
-
-if (USE_OPENCV)
-  caffe2_binary_target("make_image_db.cc")
-  target_link_libraries(make_image_db ${OpenCV_LIBS} ${CMAKE_THREAD_LIBS_INIT})
-endif()
-
 # ---[ tutorials
 caffe2_binary_target("tutorial_blob.cc")
