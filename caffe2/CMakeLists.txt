@@ -8,7 +8,6 @@ add_subdirectory(proto)
 
 add_subdirectory(contrib)
 add_subdirectory(core)
-add_subdirectory(distributed)
 # add_subdirectory(experiments) # note, we may remove this folder at some point
 add_subdirectory(mkl)
 add_subdirectory(observers)
