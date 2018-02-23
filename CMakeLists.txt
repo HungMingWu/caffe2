@@ -38,7 +38,6 @@ option(USE_NNPACK "Use NNPACK" ON)
 option(USE_OBSERVERS "Use Observer Library" OFF)
 option(USE_OPENMP "Use OpenMP for parallel code" OFF)
 option(USE_PROF "Use profiling" OFF)
-option(USE_REDIS "Use Redis" OFF)
 option(USE_THREADS "Use Threads" ON)
 
 # ---[ CMake scripts + modules

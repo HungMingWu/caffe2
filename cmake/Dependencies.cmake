@@ -117,18 +117,6 @@ if(BUILD_TEST)
   set(BUILD_SHARED_LIBS ${TEMP_BUILD_SHARED_LIBS})
 endif()
 
-# ---[ Redis
-if(USE_REDIS)
-  find_package(Hiredis)
-  if(HIREDIS_FOUND)
-    include_directories(${Hiredis_INCLUDE})
-    list(APPEND Caffe2_DEPENDENCY_LIBS ${Hiredis_LIBRARIES})
-  else()
-    message(WARNING "Not compiling with Redis. Suppress this warning with -DUSE_REDIS=OFF")
-    set(USE_REDIS OFF)
-  endif()
-endif()
-
 # ---[ EIGEN
 # Due to license considerations, we will only use the MPL2 parts of Eigen.
 set(EIGEN_MPL2_ONLY 1)
