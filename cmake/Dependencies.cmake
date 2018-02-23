@@ -117,42 +117,6 @@ if(BUILD_TEST)
   set(BUILD_SHARED_LIBS ${TEMP_BUILD_SHARED_LIBS})
 endif()
 
-# ---[ LMDB
-if(USE_LMDB)
-  find_package(LMDB)
-  if(LMDB_FOUND)
-    include_directories(${LMDB_INCLUDE_DIR})
-    list(APPEND Caffe2_DEPENDENCY_LIBS ${LMDB_LIBRARIES})
-  else()
-    message(WARNING "Not compiling with LMDB. Suppress this warning with -DUSE_LMDB=OFF")
-    set(USE_LMDB OFF)
-  endif()
-endif()
-
-# ---[ Rocksdb
-if(USE_ROCKSDB)
-  find_package(RocksDB)
-  if(ROCKSDB_FOUND)
-    include_directories(${RocksDB_INCLUDE_DIR})
-    list(APPEND Caffe2_DEPENDENCY_LIBS ${RocksDB_LIBRARIES})
-  else()
-    message(WARNING "Not compiling with RocksDB. Suppress this warning with -DUSE_ROCKSDB=OFF")
-    set(USE_ROCKSDB OFF)
-  endif()
-endif()
-
-# ---[ ZMQ
-if(USE_ZMQ)
-  find_package(ZMQ)
-  if(ZMQ_FOUND)
-    include_directories(${ZMQ_INCLUDE_DIR})
-    list(APPEND Caffe2_DEPENDENCY_LIBS ${ZMQ_LIBRARIES})
-  else()
-    message(WARNING "Not compiling with ZMQ. Suppress this warning with -DUSE_ZMQ=OFF")
-    set(USE_ZMQ OFF)
-  endif()
-endif()
-
 # ---[ Redis
 if(USE_REDIS)
   find_package(Hiredis)
