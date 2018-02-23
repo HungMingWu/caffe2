@@ -14,7 +14,6 @@ add_subdirectory(observers)
 add_subdirectory(operators)
 add_subdirectory(perfkernels)
 add_subdirectory(queue)
-add_subdirectory(sgd)
 add_subdirectory(share)
 # add_subdirectory(test) # todo: use caffe2_gtest_main instead of gtest_main because we will need to call GlobalInit
 add_subdirectory(transforms)
