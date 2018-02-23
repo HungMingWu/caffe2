@@ -1,6 +1,5 @@
 add_subdirectory(aten)
 add_subdirectory(prof)
-add_subdirectory(script)
 # Finally pass the src lists back to the parent
 
 # CPU source, test sources, binary sources
