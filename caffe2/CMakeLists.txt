@@ -26,7 +26,6 @@ add_subdirectory(utils)
 # main lib srcs.
 if (CAFFE2_WHITELISTED_FILES)
   caffe2_do_whitelist(Caffe2_CPU_SRCS CAFFE2_WHITELISTED_FILES)
-  caffe2_do_whitelist(Caffe2_GPU_SRCS CAFFE2_WHITELISTED_FILES)
 endif()
 
 # Debug messages - if you want to get a list of source files, enable the
@@ -37,20 +36,11 @@ if (FALSE)
     message(STATUS "  " ${tmp})
   endforeach()
 
-  message(STATUS "GPU sources: ")
-  foreach(tmp ${Caffe2_GPU_SRCS})
-    message(STATUS "  " ${tmp})
-  endforeach()
-
   message(STATUS "CPU test sources: ")
   foreach(tmp ${Caffe2_CPU_TEST_SRCS})
     message(STATUS "  " ${tmp})
   endforeach()
 
-  message(STATUS "GPU test sources: ")
-  foreach(tmp ${Caffe2_GPU_TEST_SRCS})
-    message(STATUS "  " ${tmp})
-  endforeach()
 endif()
 
 # ---[ Generate and install header files.

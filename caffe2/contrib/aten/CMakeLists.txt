@@ -23,5 +23,4 @@ if(USE_ATEN)
   add_dependencies(aten_op_header_gen __aten_op_header_gen)
 
   set(Caffe2_CPU_SRCS ${Caffe2_CPU_SRCS} "${CMAKE_CURRENT_SOURCE_DIR}/aten_op.cc" PARENT_SCOPE)
-  set(Caffe2_GPU_SRCS ${Caffe2_GPU_SRCS} "${CMAKE_CURRENT_SOURCE_DIR}/aten_op_cuda.cc" PARENT_SCOPE)
 endif()
