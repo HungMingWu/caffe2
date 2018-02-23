@@ -43,19 +43,5 @@ Merge first two dimensions in a single dimension with size dim(0) * dim(1).
     .Input(0, "data", "An input tensor.")
     .Output(0, "reshaped", "Reshaped tensor.");
 
-class GetPrependDimGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "MergeDim", "", vector<string>{GO(0)}, vector<string>{GI(0)});
-  }
-
-  // Arguments are no longer needed in backprop.
-  bool CopyArguments() const override {
-    return false;
-  }
-};
-
-REGISTER_GRADIENT(PrependDim, GetPrependDimGradient);
 
 } // namespace caffe2

@@ -43,26 +43,6 @@ deprecated when the gradient operator of Mul with broadcast is implemented.
     .Input(1, "w", "The column vector")
     .Output(0, "output", "Output");
 
-class GetRowMulGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return vector<OperatorDef>{
-        CreateOperatorDef(
-            "RowMul", "", vector<string>{GO(0), I(1)}, vector<string>{GI(0)}),
-        CreateOperatorDef(
-            "Mul",
-            "",
-            vector<string>{GO(0), I(0)},
-            vector<string>{GI(1) + "before_aggregate"}),
-        CreateOperatorDef(
-            "ReduceTailSum",
-            "",
-            vector<string>{GI(1) + "before_aggregate"},
-            vector<string>{GI(1)})};
-  }
-};
-REGISTER_GRADIENT(RowMul, GetRowMulGradient);
-
 } // namespace
 
 } // namespace caffe2

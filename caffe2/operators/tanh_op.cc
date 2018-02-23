@@ -73,14 +73,4 @@ and output blobs.
 
 OPERATOR_SCHEMA(TanhGradient).NumInputs(2).NumOutputs(1).AllowInplace({{1, 0}});
 
-class GetTanhGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "TanhGradient", "",
-        std::vector<string>{O(0), GO(0)},
-        std::vector<string>{GI(0)});
-  }
-};
-REGISTER_GRADIENT(Tanh, GetTanhGradient);
 }  // namespace caffe2

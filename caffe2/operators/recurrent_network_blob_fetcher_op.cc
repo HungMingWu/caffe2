@@ -40,5 +40,4 @@ workspace under CPUContext.
         "blob_names",
         "1D tensor of strings containing extracted blob names.");
 
-SHOULD_NOT_DO_GRADIENT(RecurrentNetworkBlobFetcher);
 } // namespace caffe2

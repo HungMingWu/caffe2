@@ -84,5 +84,4 @@ classes, it is considered a correct prediction.
   .Output(0, "accuracy", "1-D tensor (Tensor<float>) of size 1 containing "
           "accuracy");
 
-SHOULD_NOT_DO_GRADIENT(Accuracy);
 }  // namespace caffe2

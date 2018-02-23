@@ -203,20 +203,5 @@ Operator computes the pair wise loss between all pairs within a batch
     .Output(0, "Y", "Output blob after the cross entropy computation");
 OPERATOR_SCHEMA(PairWiseLossGradient).NumInputs(3, 4).NumOutputs(1);
 
-class GetPairWiseLossGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    vector<string> blob_names{I(0), I(1), GO(0)};
-
-    // Add lengths blob if given
-    if (def_.input_size() == 3) {
-      blob_names.push_back(I(2));
-    }
-    return SingleGradientDef(
-        "PairWiseLossGradient", "", blob_names, vector<string>{GI(0)});
-  }
-};
-REGISTER_GRADIENT(PairWiseLoss, GetPairWiseLossGradient);
-
 } // namespace
 } // namespace caffe2

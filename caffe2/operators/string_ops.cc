@@ -199,10 +199,5 @@ element is treated as a row.
         "1-D tensor of strings created by joining row elements from the "
         "input tensor.");
 
-SHOULD_NOT_DO_GRADIENT(StringPrefix);
-SHOULD_NOT_DO_GRADIENT(StringSuffix);
-SHOULD_NOT_DO_GRADIENT(StringStartsWith);
-SHOULD_NOT_DO_GRADIENT(StringEndsWith);
-SHOULD_NOT_DO_GRADIENT(StringJoin);
 }
 } // namespace caffe2

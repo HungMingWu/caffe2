@@ -97,25 +97,4 @@ channels C, height H and width W, to the NHWC order.
   .Output(0, "output", "The output tensor (Tensor<float>) in the NHWC order.");
 
 
-class GetNHWC2NCHWGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "NCHW2NHWC", "",
-        vector<string>{GO(0)},
-        vector<string>{GI(0)});
-  }
-};
-REGISTER_GRADIENT(NHWC2NCHW, GetNHWC2NCHWGradient);
-
-class GetNCHW2NHWCGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "NHWC2NCHW", "",
-        vector<string>{GO(0)},
-        vector<string>{GI(0)});
-  }
-};
-REGISTER_GRADIENT(NCHW2NHWC, GetNCHW2NHWCGradient);
 }  // namespace caffe2

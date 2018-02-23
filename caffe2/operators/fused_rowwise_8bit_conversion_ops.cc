@@ -36,7 +36,6 @@ bytes in the row encode single quantized values.)
 )DOC")
     .Input(0, "input", "Float32 input data")
     .Output(0, "output", "Fused scale, bias and quantized data");
-NO_GRADIENT(FloatToFused8BitRowwiseQuantized);
 
 REGISTER_CPU_OPERATOR(
     Fused8BitRowwiseQuantizedToFloat,
@@ -60,5 +59,4 @@ the original, un-quantized floating point values.
         "scale_bias_quantized_input",
         "Fused scale, bias and quantized data")
     .Output(0, "float_input", "Float32 data");
-NO_GRADIENT(Fused8BitRowwiseQuantizedToFloat);
 } // namespace caffe2

@@ -1337,21 +1337,6 @@ process.
         "specified in the doc for CreateTreeCursor.")
     .Input(0, "packed_tensor", "The tensor to be unpacked");
 
-SHOULD_NOT_DO_GRADIENT(CreateTreeCursor);
-SHOULD_NOT_DO_GRADIENT(ResetCursor);
-SHOULD_NOT_DO_GRADIENT(ReadNextBatch);
-SHOULD_NOT_DO_GRADIENT(ComputeOffset);
-SHOULD_NOT_DO_GRADIENT(ReadRandomBatch);
-SHOULD_NOT_DO_GRADIENT(CheckDatasetConsistency);
-SHOULD_NOT_DO_GRADIENT(Append);
-SHOULD_NOT_DO_GRADIENT(AtomicAppend);
-SHOULD_NOT_DO_GRADIENT(CreateTensorVector);
-SHOULD_NOT_DO_GRADIENT(TensorVectorSize);
-SHOULD_NOT_DO_GRADIENT(ConcatTensorVector);
-SHOULD_NOT_DO_GRADIENT(CollectTensor);
-SHOULD_NOT_DO_GRADIENT(UnPackRecords);
-SHOULD_NOT_DO_GRADIENT(PackRecords);
-
 class TreeCursorSerializer : public BlobSerializerBase {
  public:
   TreeCursorSerializer() {}

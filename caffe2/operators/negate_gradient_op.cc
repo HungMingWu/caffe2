@@ -12,15 +12,4 @@ NegagteGradient operator in forward pass simply copies input to the
 output, and in backward pass, flips the sign of the output gradient
 )DOC");
 
-struct GetNegateGradientGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  std::vector<OperatorDef> GetGradientDefs() override {
-    CAFFE_ENFORCE_EQ(def_.input_size(), 1);
-    return SingleGradientDef(
-        "Negative", "", vector<string>{GO(0)}, vector<string>{GI(0)});
-  }
-};
-
-REGISTER_GRADIENT(NegateGradient, GetNegateGradientGradient);
-
 } // namespace caffe2

@@ -268,6 +268,5 @@ This operator is thread-safe.
     .Output(2, "OBJECT_TO_POS_MAP", "(Optional) Same as the input")
     .Output(3, "POS_TO_OBJECT", "(Optional) Same as the input");
 
-SHOULD_NOT_DO_GRADIENT(ReservoirSampling);
 } // namespace
 } // namespace caffe2

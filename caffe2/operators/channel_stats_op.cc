@@ -74,5 +74,4 @@ has the effect of changing the batch size over which SpatialBN is applied.
         "sumsq",
         "The output 1-dimensional tensor of size C containing the sum of "
         "elements squared per channel.");
-SHOULD_NOT_DO_GRADIENT(ChannelStats);
 } // namespace caffe2

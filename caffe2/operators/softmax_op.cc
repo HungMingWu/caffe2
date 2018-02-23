@@ -128,16 +128,5 @@ will throw errors.
 // Input: Y, dY. Output: dX
 OPERATOR_SCHEMA(SoftmaxGradient).NumInputs(2).NumOutputs(1);
 
-class GetSoftmaxGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        def_.type() + "Gradient", "",
-        vector<string>{O(0), GO(0)},
-        vector<string>{GI(0)});
-  }
-};
-REGISTER_GRADIENT(Softmax, GetSoftmaxGradient);
-REGISTER_GRADIENT(SoftmaxFp16, GetSoftmaxGradient);
 
 }  // namespace caffe2

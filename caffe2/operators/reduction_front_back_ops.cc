@@ -15,7 +15,6 @@
  */
 
 #include "caffe2/operators/reduction_front_back_ops.h"
-#include "caffe2/core/operator_gradient.h"
 
 namespace caffe2 {
 
@@ -89,36 +88,11 @@ REGISTER_CPU_OPERATOR(
     ReduceFrontSumGradient,
     SumReduceDimsGradientOp<CPUContext, true, false>);
 
-class GetReduceFrontSumGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "ReduceFrontSumGradient",
-        "",
-        vector<string>{GO(0), I(0)},
-        vector<string>{GI(0)});
-  }
-};
-
-REGISTER_GRADIENT(ReduceFrontSum, GetReduceFrontSumGradient);
 
 REGISTER_CPU_OPERATOR(ReduceBackSum, SumReduceDimsOp<CPUContext, false, false>);
 REGISTER_CPU_OPERATOR(
     ReduceBackSumGradient,
     SumReduceDimsGradientOp<CPUContext, false, false>);
-
-class GetReduceBackSumGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "ReduceBackSumGradient",
-        "",
-        vector<string>{GO(0), I(0)},
-        vector<string>{GI(0)});
-  }
-};
-
-REGISTER_GRADIENT(ReduceBackSum, GetReduceBackSumGradient);
 
 #define REDUCTION_OP_SHAPE_INFERENCE(is_front_reducer)                      \
   CAFFE_ENFORCE_EQ(1, in.size());                                           \
@@ -232,18 +206,6 @@ REGISTER_CPU_OPERATOR(
     ReduceFrontMeanGradient,
     SumReduceDimsGradientOp<CPUContext, true, true>);
 
-class GetReduceFrontMeanGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "ReduceFrontMeanGradient",
-        "",
-        vector<string>{GO(0), I(0)},
-        vector<string>{GI(0)});
-  }
-};
-
-REGISTER_GRADIENT(ReduceFrontMean, GetReduceFrontMeanGradient);
 
 OPERATOR_SCHEMA(ReduceFrontMean)
     .NumInputs(1)
@@ -263,19 +225,6 @@ REGISTER_CPU_OPERATOR(ReduceBackMean, SumReduceDimsOp<CPUContext, false, true>);
 REGISTER_CPU_OPERATOR(
     ReduceBackMeanGradient,
     SumReduceDimsGradientOp<CPUContext, false, true>);
-
-class GetReduceBackMeanGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "ReduceBackMeanGradient",
-        "",
-        vector<string>{GO(0), I(0)},
-        vector<string>{GI(0)});
-  }
-};
-
-REGISTER_GRADIENT(ReduceBackMean, GetReduceBackMeanGradient);
 
 OPERATOR_SCHEMA(ReduceBackMean)
     .NumInputs(1)
@@ -368,32 +317,6 @@ REGISTER_CPU_OPERATOR(ReduceBackMax, MaxReduceDimsOp<float, CPUContext, false>);
 REGISTER_CPU_OPERATOR(
     ReduceBackMaxGradient,
     MaxReduceDimsGradientOp<float, CPUContext, false>);
-
-class GetReduceFrontMaxGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "ReduceFrontMaxGradient",
-        "",
-        vector<string>{GO(0), I(0), O(0)},
-        vector<string>{GI(0)});
-  }
-};
-
-REGISTER_GRADIENT(ReduceFrontMax, GetReduceFrontMaxGradient);
-
-class GetReduceBackMaxGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "ReduceBackMaxGradient",
-        "",
-        vector<string>{GO(0), I(0), O(0)},
-        vector<string>{GI(0)});
-  }
-};
-
-REGISTER_GRADIENT(ReduceBackMax, GetReduceBackMaxGradient);
 
 OPERATOR_SCHEMA(ReduceFrontMax)
     .NumInputs(1)

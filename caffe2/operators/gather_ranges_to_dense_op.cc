@@ -104,7 +104,6 @@ are sorted by the corresponding KEY.
     });
 
 REGISTER_CPU_OPERATOR(GatherRangesToDense, GatherRangesToDenseOp<CPUContext>);
-NO_GRADIENT(GatherRangesToDense);
 
 } // namespace
 } // namespace caffe2

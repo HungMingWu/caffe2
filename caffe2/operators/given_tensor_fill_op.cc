@@ -31,12 +31,6 @@ REGISTER_CPU_OPERATOR(
     GivenTensorStringFill,
     GivenTensorFillOp<std::string, CPUContext>);
 
-NO_GRADIENT(GivenTensorFill);
-NO_GRADIENT(GivenTensorDoubleFill);
-NO_GRADIENT(GivenTensorBoolFill);
-NO_GRADIENT(GivenTensorIntFill);
-NO_GRADIENT(GivenTensorInt64Fill);
-NO_GRADIENT(GivenTensorStringFill);
 
 OPERATOR_SCHEMA(GivenTensorFill)
     .NumInputs(0, 1)

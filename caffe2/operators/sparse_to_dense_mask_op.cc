@@ -115,19 +115,5 @@ The output is the gradient of the input value from SparseToDenseMask. The
 gradient for default_value has not been implemented.
 )DOC");
 
-class GetSparseToDenseMaskGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    vector<string> blob_names{I(0), GO(0)};
-
-    // Add lengths blob if given
-    if (def_.input_size() == 4) {
-      blob_names.push_back(I(3));
-    }
-    return SingleGradientDef(
-        "SparseToDenseMaskGradient", "", blob_names, vector<string>{GI(1)});
-  }
-};
-REGISTER_GRADIENT(SparseToDenseMask, GetSparseToDenseMaskGradient);
 } // namespace
 } // namespace caffe2

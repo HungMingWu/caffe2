@@ -152,9 +152,4 @@ counter). This is determined whether we need to do checkpointing.
 
 OPERATOR_SCHEMA(Snapshot);
 
-NO_GRADIENT(Load);
-SHOULD_NOT_DO_GRADIENT(DBExists);
-SHOULD_NOT_DO_GRADIENT(Save);
-SHOULD_NOT_DO_GRADIENT(Checkpoint);
-SHOULD_NOT_DO_GRADIENT(Snapshot);
 }  // namespace caffe2

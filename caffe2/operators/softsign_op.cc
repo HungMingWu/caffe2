@@ -85,22 +85,5 @@ element-wise.
         "The softsign gradient (sgn(x)/(1+|x|)^2) values of the input tensor "
         "computed element-wise");
 
-class GetSoftsignGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    CAFFE_ENFORCE(
-        I(0) != O(0),
-        "Cannot compute softsign gradient "
-        "if you choose to do an in-place calculation.");
-
-    return SingleGradientDef(
-        "SoftsignGradient",
-        "",
-        vector<string>{I(0), GO(0)},
-        vector<string>{GI(0)});
-  }
-};
-
-REGISTER_GRADIENT(Softsign, GetSoftsignGradient);
 
 } // namespace caffe2

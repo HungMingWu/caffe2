@@ -211,32 +211,5 @@ after running this operator.
         "values",
         "Values, tensor of the same size as `indices` and same data type as dense tensor.");
 
-namespace {
 
-class GetBatchSparseToDenseGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "BatchDenseToSparse",
-        "",
-        vector<string>{I(0), I(1), GO(0)},
-        vector<string>{GI(2)});
-  }
-};
-
-class GetBatchDenseToSparseGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "BatchSparseToDense",
-        "",
-        vector<string>{I(0), I(1), GO(0), I(2)},
-        vector<string>{GI(2)});
-  }
-};
-
-REGISTER_GRADIENT(BatchSparseToDense, GetBatchSparseToDenseGradient);
-REGISTER_GRADIENT(BatchDenseToSparse, GetBatchDenseToSparseGradient);
-
-} // namespace
 } // namespace caffe2

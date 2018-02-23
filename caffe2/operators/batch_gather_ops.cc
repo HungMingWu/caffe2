@@ -68,18 +68,5 @@ Example:
 
 OPERATOR_SCHEMA(BatchGatherGradient).NumInputs(3).NumOutputs(1);
 
-class GetBatchGatherGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    using Op = BatchGatherOp<CPUContext>;
-    return SingleGradientDef(
-        "BatchGatherGradient",
-        "",
-        vector<string>{I(Op::DATA), I(Op::INDICES), GO(0)},
-        vector<string>{GI(0)});
-  }
-};
-
-REGISTER_GRADIENT(BatchGather, GetBatchGatherGradient);
 
 } // namespace caffe2

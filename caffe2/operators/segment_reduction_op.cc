@@ -93,10 +93,7 @@ string FormatDoc() {
   OPERATOR_SCHEMA_STR(                                                         \
       string(__VA_ARGS__::basename) + (__VA_ARGS__::OpDef::name) + "Gradient") \
       .NumInputs(__VA_ARGS__::BackwardOp::kNumInputs)                          \
-      .NumOutputs(1);                                                          \
-  REGISTER_GRADIENT_STR(                                                       \
-      string(__VA_ARGS__::basename) + (__VA_ARGS__::OpDef::name),              \
-      __VA_ARGS__::GetGradient)
+      .NumOutputs(1);
 
 #define REGISTER_SEGMENT_DEF(...)                                 \
   REGISTER_CPU_OPERATOR_STR(                                      \
@@ -207,10 +204,7 @@ REGISTER_GRADIENT_WITH_MAIN_INPUT(
       .SetDoc(FormatDoc<__VA_ARGS__>())                                  \
       .Output(0, "OUTPUT", "Aggregated tensor")                          \
       .FillUsing(__VA_ARGS__::PopulateSchema);                           \
-  REGISTER_GRADIENT_WITH_MAIN_INPUT_AND_FORWARD_OUTPUT(__VA_ARGS__);     \
-  REGISTER_GRADIENT_STR(                                                 \
-      string(__VA_ARGS__::basename) + (__VA_ARGS__::OpDef::name),        \
-      __VA_ARGS__::GetGradient)
+  REGISTER_GRADIENT_WITH_MAIN_INPUT_AND_FORWARD_OUTPUT(__VA_ARGS__);
 
 // This implements and registers a length op with a gradient which requires
 // the main input as well as the output of the forward output.

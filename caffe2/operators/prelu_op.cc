@@ -300,16 +300,4 @@ to the chain rule and derivatives of the rectified linear function.
 
 )DOC");
 
-class GetPReluGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        def_.type() + "Gradient",
-        "",
-        vector<string>{O(0), GO(0), I(0), I(1)},
-        vector<string>{GI(0), GI(1)});
-  }
-};
-REGISTER_GRADIENT(PRelu, GetPReluGradient);
-
 } // namespace caffe2

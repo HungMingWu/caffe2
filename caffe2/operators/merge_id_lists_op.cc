@@ -43,6 +43,5 @@ within a batch. This can be an issue if ID_LIST are order sensitive.
     .Input(1, "values_0", "Values of the ID_LISTs batch for first feature")
     .Output(0, "merged_lengths", "Lengths of the merged ID_LISTs batch")
     .Output(1, "merged_values", "Values of the merged ID_LISTs batch");
-NO_GRADIENT(MergeIdLists);
 }
 }

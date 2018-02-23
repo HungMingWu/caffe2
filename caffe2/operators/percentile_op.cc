@@ -127,6 +127,4 @@ OPERATOR_SCHEMA(Percentile)
         "of this tensor, percentile_values[i], corresponds to the percentile calculated "
         "for original_values[i].");
 
-NO_GRADIENT(Percentile);
-
 } // namespace caffe2

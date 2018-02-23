@@ -61,15 +61,4 @@ After running this op:
         "first dimension is omitted)");
 
 
-namespace {
-class GetSparseToDenseGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "Gather", "", vector<string>{GO(0), I(0)}, vector<string>{GI(1)});
-  }
-};
-
-REGISTER_GRADIENT(SparseToDense, GetSparseToDenseGradient);
-}
 } // namespace caffe2

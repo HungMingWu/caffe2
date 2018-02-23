@@ -206,17 +206,4 @@ Depending on the mode, there are multiple output cases:
 // Output: dX (aka "gradInput")
 OPERATOR_SCHEMA(RoIPoolGradient).NumInputs(4).NumOutputs(1);
 
-class GetRoIPoolGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "RoIPoolGradient",
-        "",
-        vector<string>{I(0), I(1), O(1), GO(0)},
-        vector<string>{GI(0)});
-  }
-};
-
-REGISTER_GRADIENT(RoIPool, GetRoIPoolGradient);
-
 } // namespace caffe2

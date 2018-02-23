@@ -99,18 +99,7 @@ supports l1 and l2 norm) determined by the argument p.
     .Output(0, "dx", "1D output tensor")
     .Arg("p", "Order of the norm in p-norm");
 
-class GetLpNormGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "LpNormGradient",
-        "",
-        vector<string>{I(0), GO(0)},
-        vector<string>{GI(0)});
-  }
-};
 
-REGISTER_GRADIENT(LpNorm, GetLpNormGradient);
 } // namespace
 
 } // namespace caffe2

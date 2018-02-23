@@ -372,17 +372,6 @@ OPERATOR_SCHEMA(LabelCrossEntropyGradient)
   .NumInputs(3)
   .NumOutputs(1);
 
-class GetLabelCrossEntropyGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "LabelCrossEntropyGradient", "",
-        vector<string>{I(0), I(1), GO(0)},
-        vector<string>{GI(0)});
-  }
-};
-REGISTER_GRADIENT(LabelCrossEntropy, GetLabelCrossEntropyGradient);
-
 REGISTER_CPU_OPERATOR(MakeTwoClass,
                       MakeTwoClassOp<float, CPUContext>);
 REGISTER_CPU_OPERATOR(MakeTwoClassGradient,
@@ -466,46 +455,7 @@ OPERATOR_SCHEMA(WeightedSigmoidCrossEntropyWithLogitsGradient)
     .NumInputs(4)
     .NumOutputs(1);
 
-struct GetMakeTwoClassGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "MakeTwoClassGradient",
-        "",
-        vector<string>{GO(0)},
-        vector<string>{GI(0)});
-  }
-};
-REGISTER_GRADIENT(MakeTwoClass, GetMakeTwoClassGradient);
 
-struct GetSigmoidCrossEntropyWithLogitsGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "SigmoidCrossEntropyWithLogitsGradient",
-        "",
-        vector<string>{GO(0), I(0), I(1)},
-        vector<string>{GI(0)});
-  }
-};
-REGISTER_GRADIENT(
-    SigmoidCrossEntropyWithLogits,
-    GetSigmoidCrossEntropyWithLogitsGradient);
-
-struct GetWeightedSigmoidCrossEntropyWithLogitsGradient
-    : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "WeightedSigmoidCrossEntropyWithLogitsGradient",
-        "",
-        vector<string>{GO(0), I(0), I(1), I(2)},
-        vector<string>{GI(0)});
-  }
-};
-REGISTER_GRADIENT(
-    WeightedSigmoidCrossEntropyWithLogits,
-    GetWeightedSigmoidCrossEntropyWithLogitsGradient);
 
 REGISTER_CPU_OPERATOR(CrossEntropy,
                       CrossEntropyOp<float, CPUContext>);
@@ -543,15 +493,5 @@ OPERATOR_SCHEMA(CrossEntropyGradient)
   .NumInputs(3)
   .NumOutputs(1);
 
-class GetCrossEntropyGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "CrossEntropyGradient", "",
-        vector<string>{I(0), I(1), GO(0)},
-        vector<string>{GI(0)});
-  }
-};
-REGISTER_GRADIENT(CrossEntropy, GetCrossEntropyGradient);
 
 }  // namespace caffe2

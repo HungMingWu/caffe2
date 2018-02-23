@@ -248,29 +248,10 @@ bool InstanceNormGradientOp<T, Context>::RunOnDeviceWithOrderNCHW() {
   return true;
 }
 
-class GetInstanceNormGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    vector<string> inputs{I(0), I(1), I(2), GO(0)};
-    if (def_.output_size() >= 2) {
-      inputs.push_back(O(1));
-    }
-    if (def_.output_size() >= 3) {
-      inputs.push_back(O(2));
-    }
-    return SingleGradientDef(
-        "InstanceNormGradient",
-        "",
-        inputs,
-        vector<string>{GI(0), GI(1), GI(2)});
-  }
-};
-
 REGISTER_CPU_OPERATOR(
     InstanceNormGradient,
     InstanceNormGradientOp<float, CPUContext>);
 
 OPERATOR_SCHEMA(InstanceNormGradient).NumInputs(4, 6).NumOutputs(3);
 
-REGISTER_GRADIENT(InstanceNorm, GetInstanceNormGradient);
 }

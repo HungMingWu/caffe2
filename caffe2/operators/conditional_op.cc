@@ -75,6 +75,4 @@ have the exact same shape and type.
     .Input(2, "DataF", "Data to use when False")
     .Output(0, "DataO", "Output data after applying ConditionalOp");
 
-NO_GRADIENT(Conditional);
-
 } // caffe2

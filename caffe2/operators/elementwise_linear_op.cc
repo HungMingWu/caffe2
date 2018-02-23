@@ -121,20 +121,4 @@ OPERATOR_SCHEMA(ElementwiseLinearGradient)
   .NumInputs(3)
   .NumOutputs(3);
 
-struct GetElementwiseLinearGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-      "ElementwiseLinearGradient",
-      "",
-      vector<string>{GO(0), I(0), I(1)},
-      vector<string>{GI(0), GI(1), GI(2)});
-    }
-};
-
-REGISTER_GRADIENT(
-  ElementwiseLinear,
-  GetElementwiseLinearGradient
-);
-
 }  // namespace caffe2

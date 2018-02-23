@@ -153,8 +153,6 @@ applied.
     .Input(1, "mask", "A 1D bool tensor of values to keep.")
     .Output(0, "masked_lengths", "Segment lengths of a masked tensor.");
 
-NO_GRADIENT(BooleanMask)
-NO_GRADIENT(BooleanMaskLengths);
 
 const float minf = -1.0f * std::numeric_limits<float>::infinity();
 
@@ -468,37 +466,6 @@ Argument 'radius' should be provided.
         "one or more data dimensions (beginning at this axis).  "
         "(currently only supported for sequence mode without batch argument)");
 
-class GetSequenceMaskGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    vector<Argument> args;
-    args.reserve(Def().arg().size());
-    for (const auto& x : Def().arg()) {
-      args.push_back(x);
-    }
-    args.push_back(MakeArgument<bool>("grad", true));
-    if (def_.input_size() == 1) {
-      return SingleGradientDef(
-          "SequenceMask",
-          "",
-          vector<string>{GO(0)},
-          vector<string>{GI(0)},
-          args);
-    } else {
-      return SingleGradientDef(
-          "SequenceMask",
-          "",
-          vector<string>{GO(0), I(1)},
-          vector<string>{GI(0)},
-          args);
-    }
-  }
 
-  bool CopyArguments() const override {
-    return false;
-  }
-};
-
-REGISTER_GRADIENT(SequenceMask, GetSequenceMaskGradient);
 
 } // namespace caffe2

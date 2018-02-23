@@ -371,22 +371,4 @@ REGISTER_CPU_OPERATOR(
     PoolGradientOp<float, CPUContext, MaxPool<float>>);
 OPERATOR_SCHEMA(MaxPool3DGradient).NumInputs(3).NumOutputs(1);
 
-class GetPoolGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        def_.type() + "Gradient",
-        "",
-        vector<string>{I(0), O(0), GO(0)},
-        vector<string>{GI(0)});
-  }
-};
-REGISTER_GRADIENT(AveragePool, GetPoolGradient);
-REGISTER_GRADIENT(AveragePool1D, GetPoolGradient);
-REGISTER_GRADIENT(AveragePool2D, GetPoolGradient);
-REGISTER_GRADIENT(AveragePool3D, GetPoolGradient);
-REGISTER_GRADIENT(MaxPool, GetPoolGradient);
-REGISTER_GRADIENT(MaxPool1D, GetPoolGradient);
-REGISTER_GRADIENT(MaxPool2D, GetPoolGradient);
-REGISTER_GRADIENT(MaxPool3D, GetPoolGradient);
 }

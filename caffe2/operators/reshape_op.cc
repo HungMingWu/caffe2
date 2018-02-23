@@ -138,22 +138,5 @@ from the input tensor.
     .Output(0, "reshaped", "Reshaped data.")
     .Output(1, "old_shape", "Original shape.");
 
-class GetReshapeGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "Reshape",
-        "",
-        vector<string>{GO(0), O(1)},
-        vector<string>{GI(0), "_" + GI(0) + "_dims"});
-  }
-
-  // Argument `shape` is no longer needed in backprop.
-  bool CopyArguments() const override {
-    return false;
-  }
-};
-
-REGISTER_GRADIENT(Reshape, GetReshapeGradient);
 
 } // namespace caffe2

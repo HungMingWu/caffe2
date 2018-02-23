@@ -76,5 +76,4 @@ OPERATOR_SCHEMA(SparseNormalize)
 Given a sparse matrix, apply max_norm or constant_norm sparse regularization.
 )DOC");
 
-SHOULD_NOT_DO_GRADIENT(SparseNormalize);
 } // namespace caffe2

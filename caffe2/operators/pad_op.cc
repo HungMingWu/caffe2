@@ -462,13 +462,5 @@ values and stride sizes defined by the ConvPoolOpBase operator.
 
 OPERATOR_SCHEMA(PadImageGradient).NumInputs(1).NumOutputs(1);
 
-class GetPadImageGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "PadImageGradient", "", vector<string>{GO(0)}, vector<string>{GI(0)});
-  }
-};
-REGISTER_GRADIENT(PadImage, GetPadImageGradient);
 
 } // namespace caffe2

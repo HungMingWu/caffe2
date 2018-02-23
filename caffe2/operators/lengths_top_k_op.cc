@@ -159,20 +159,4 @@ be padded by -1.
         "indices would be padded with -1.");
 OPERATOR_SCHEMA(LengthsTopKGradient).NumInputs(3).NumOutputs(1);
 
-namespace {
-
-class GetLengthsTopKGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "LengthsTopKGradient",
-        "",
-        vector<string>{I(1), O(1), GO(0)},
-        vector<string>{GI(0)});
-  }
-};
-
-} // namespace
-
-REGISTER_GRADIENT(LengthsTopK, GetLengthsTopKGradient);
 } // namespace caffe2

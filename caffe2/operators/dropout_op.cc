@@ -116,22 +116,4 @@ OPERATOR_SCHEMA(DropoutGrad)
     .NumOutputs(1)
     .AllowInplace({{0, 0}});
 
-class GetDropoutGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    ArgumentHelper argshelper(def_);
-    auto is_test = argshelper.GetSingleArgument<bool>("is_test", 0);
-    if (is_test) {
-      return SingleGradientDef(
-          "DropoutGrad", "", vector<string>{GO(0)}, vector<string>{GI(0)});
-    } else {
-      return SingleGradientDef(
-          "DropoutGrad",
-          "",
-          vector<string>{GO(0), O(1)},
-          vector<string>{GI(0)});
-    }
-  }
-};
-REGISTER_GRADIENT(Dropout, GetDropoutGradient);
 } // namespace caffe2

@@ -41,5 +41,4 @@ argument.
          "then, accumulation is done.")
   .Output(0, "output", "Accumulated output tensor");
 
-SHOULD_NOT_DO_GRADIENT(Accumulate);
 }  // namespace caffe2

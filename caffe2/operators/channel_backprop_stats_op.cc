@@ -90,6 +90,5 @@ results over the larger batch size )DOC")
         "because we are on the backward pass")
     .Output(0, "scale_grad", "Gradient for the scale vector")
     .Output(1, "bias_grad", "Gradient for the bias vector");
-SHOULD_NOT_DO_GRADIENT(ChannelBackpropStats);
 
 } // namespace caffe2

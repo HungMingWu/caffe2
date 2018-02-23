@@ -40,27 +40,6 @@ OPERATOR_SCHEMA(Sqr)
     .Input(0, "input", "Input tensor")
     .Output(0, "output", "Squared elements of the input");
 
-class GetSqrGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    Argument scale_arg;
-    scale_arg.set_name("scale");
-    scale_arg.set_f(2.0);
-    return vector<OperatorDef>{CreateOperatorDef(
-                                   "Scale",
-                                   "",
-                                   std::vector<string>{GO(0)},
-                                   std::vector<string>{GO(0)},
-                                   std::vector<Argument>{scale_arg}),
-                               CreateOperatorDef(
-                                   "Mul",
-                                   "",
-                                   std::vector<string>{GO(0), I(0)},
-                                   std::vector<string>{GI(0)})};
-  }
-};
-REGISTER_GRADIENT(Sqr, GetSqrGradient);
-
 struct SignCPUFunctor {
   template <typename T>
   inline void
@@ -80,6 +59,5 @@ OPERATOR_SCHEMA(Sign)
     .NumOutputs(1)
     .SetDoc("Computes sign for each element of the input: -1, 0 or 1.")
     .IdenticalTypeAndShape();
-SHOULD_NOT_DO_GRADIENT(Sign);
 
 } // namespace caffe2

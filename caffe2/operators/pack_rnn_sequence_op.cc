@@ -93,31 +93,6 @@ UnpackRNNSequence is PackRNNSequence.
     .Input(1, "lengths", "lengths with each number representing the pack size.")
     .Output(0, "output", "Output tensor before packing");
 
-class GetPackRNNSequenceGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    CAFFE_ENFORCE_EQ(def_.input_size(), 2);
-    return SingleGradientDef(
-        "UnpackRNNSequence",
-        "",
-        vector<string>{GO(0), I(1)},
-        vector<string>{GI(0)});
-  }
-};
 
-class GetUnpackRNNSequenceGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    CAFFE_ENFORCE_EQ(def_.input_size(), 2);
-    return SingleGradientDef(
-        "PackRNNSequence",
-        "",
-        vector<string>{GO(0), I(1)},
-        vector<string>{GI(0)});
-  }
-};
-
-REGISTER_GRADIENT(PackRNNSequence, GetPackRNNSequenceGradient);
-REGISTER_GRADIENT(UnpackRNNSequence, GetUnpackRNNSequenceGradient);
 } // namespace
 } // namespace caffe2

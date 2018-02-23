@@ -250,16 +250,6 @@ OPERATOR_SCHEMA(RangeFill)
     .AllowInplace({{0, 0}})
     .TensorInferenceFunction(FillerTensorInference<>);
 
-NO_GRADIENT(UniformFill);
-NO_GRADIENT(UniformIntFill);
-NO_GRADIENT(UniqueUniformFill);
-NO_GRADIENT(ConstantFill);
-NO_GRADIENT(DiagonalFill);
-NO_GRADIENT(GaussianFill);
-NO_GRADIENT(XavierFill);
-NO_GRADIENT(MSRAFill);
-NO_GRADIENT(RangeFill);
-
 OPERATOR_SCHEMA(LengthsRangeFill)
     .NumInputs(1)
     .NumOutputs(1)
@@ -272,6 +262,5 @@ output would be [0,1,2,3,0,1,2,0].
         0,
         "range_sequence",
         "1D tensor whose size is the sum of `lengths`");
-NO_GRADIENT(LengthsRangeFill);
 
 }  // namespace caffe2

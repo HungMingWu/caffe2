@@ -66,23 +66,5 @@ For example, tiling [[a b c d]] by tile=2, axis=0 produces
 
 OPERATOR_SCHEMA(TileGradient).NumInputs(1, 3).NumOutputs(1);
 
-class GetTileGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    // Check whether the tiles/axis information was
-    // passed through input arguments
-    vector<std::string> g_inputs({GO(0)});
-    if (Def().input_size() > 1) {
-      g_inputs.push_back(I(1));
-    }
-    if (Def().input_size() > 2) {
-      g_inputs.push_back(I(2));
-    }
-    return SingleGradientDef(
-        "TileGradient", "", g_inputs, vector<string>{GI(0)});
-  }
-};
-
-REGISTER_GRADIENT(Tile, GetTileGradient);
 
 } // namespace caffe2

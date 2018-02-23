@@ -63,15 +63,4 @@ Calculates the absolute value of the given input tensor, element-wise.
 
 OPERATOR_SCHEMA(AbsGradient).NumInputs(2).NumOutputs(1).IdenticalTypeAndShape();
 
-class GetAbsGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "AbsGradient",
-        "",
-        std::vector<string>{I(0), GO(0)},
-        std::vector<string>{GI(0)});
-  }
-};
-REGISTER_GRADIENT(Abs, GetAbsGradient);
 } // namespace caffe2

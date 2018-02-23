@@ -77,6 +77,5 @@ low-rank decomposition and the speed of the computation.
 
 OPERATOR_SCHEMA(TTLinearGradient);
 
-GRADIENT_NOT_IMPLEMENTED_YET(TT);
 } // namespace
 } // namespace caffe2

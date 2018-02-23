@@ -644,8 +644,6 @@ weights derived by lengths. i.e 1/pow(length, power)
 
 
 
-SHOULD_NOT_DO_GRADIENT(WallClockTime);
-
 OPERATOR_SCHEMA(UnsafeCoalesce)
     .NumInputsOutputs([](int inputs, int outputs) {
       return inputs + 1 == outputs;
@@ -709,188 +707,6 @@ smaller than lower_bound or greater than upper_bound respectively.
         "num_buckets",
         "number of buckets to use in [lower_bound, upper_bound)");
 
-class GetEnsureDenseGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    CAFFE_ENFORCE(
-        GradOut(0).IsSparse() || GradOut(0).IsDense(),
-        "Input gradient ",
-        O(0),
-        " should be either sparse or dense.");
-
-    if (GradOut(0).IsDense()) {
-      SetDense(0, GO(0));
-      return vector<OperatorDef>();
-    } else {
-      return SingleGradientDef(
-          "SparseToDense",
-          "",
-          vector<string>{GO_I(0), GO_V(0), I(0)},
-          vector<string>{GI(0)});
-    }
-  }
-};
-REGISTER_GRADIENT(EnsureDense, GetEnsureDenseGradient);
-
-SHOULD_NOT_DO_GRADIENT(Print);
-SHOULD_NOT_DO_GRADIENT(HasElements);
-SHOULD_NOT_DO_GRADIENT(IsEmpty);
-SHOULD_NOT_DO_GRADIENT(LengthsToShape);
-SHOULD_NOT_DO_GRADIENT(UnsafeCoalesce);
-
-class GetAliasGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    // We will simply pass-along the gradient. Nothing needs to
-    // be calculated.
-    SetDense(0, GO(0));
-    return vector<OperatorDef>();
-  }
-};
-REGISTER_GRADIENT(Alias, GetAliasGradient);
-
-SHOULD_NOT_DO_GRADIENT(ResizeLike);
-
-class GetSumGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    for (auto i = 0; i < def_.input_size(); ++i) {
-      SetDense(i, GO(0));
-    }
-    return vector<OperatorDef>();
-  }
-};
-REGISTER_GRADIENT(Sum, GetSumGradient);
-
-SHOULD_NOT_DO_GRADIENT(ScatterWeightedSum);
-SHOULD_NOT_DO_GRADIENT(ScatterAssign);
-
-class GetWeightedSumGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    ArgumentHelper argsHelper(def_);
-    const bool grad_on_w = argsHelper.GetSingleArgument<bool>("grad_on_w", 0);
-
-    auto inputs = vector<string>{GO(0)};
-    auto outputs = vector<string>();
-    for (int i = 0; i < def_.input_size(); i += 2) {
-      inputs.push_back(I(i));
-      inputs.push_back(I(i + 1));
-      outputs.push_back(GI(i));
-    }
-
-    if (grad_on_w) {
-      for (int i = 0; i < def_.input_size(); i += 2) {
-        outputs.push_back(GI(i + 1));
-      }
-    }
-
-    return SingleGradientDef("WeightedSumGradient", "", inputs, outputs);
-  }
-};
-REGISTER_GRADIENT(WeightedSum, GetWeightedSumGradient);
-
-class GetGatherGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    ArgumentHelper argsHelper(def_);
-    const bool dense_gradient =
-        argsHelper.GetSingleArgument<bool>("dense_gradient", false);
-
-    using Op = GatherOp<CPUContext>;
-
-    if (dense_gradient) {
-      return vector<OperatorDef>{CreateOperatorDef(
-          "SparseToDense",
-          "",
-          vector<string>{I(Op::INDICES), GO(0), I(Op::DATA)},
-          vector<string>{GI(Op::DATA)})};
-    } else {
-      // For now we don't do any reshaping as the consumer of this op would
-      // probably be ScatterUpdate which is intenionally ignores shapes. We
-      // might need to revisit it in the future for correctness purposes. The
-      // right shape for the output woild be to flatten INDICES and collapse
-      // first X dims of GRAD
-      SetSparse(Op::DATA, I(Op::INDICES), GO(0));
-      return vector<OperatorDef>();
-    }
-  }
-};
-REGISTER_GRADIENT(Gather, GetGatherGradient);
-
-struct GetFlattenToVecGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "ResizeLike", "", vector<string>{GO(0), I(0)}, vector<string>{GI(0)});
-  }
-};
-REGISTER_GRADIENT(FlattenToVec, GetFlattenToVecGradient);
-
-struct GetCopyGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "CopyOnDeviceLike",
-        "",
-        vector<string>{GO(0), I(0)},
-        vector<string>{GI(0)});
-  }
-};
-REGISTER_GRADIENT(Copy, GetCopyGradient);
-
-struct GetGPUToCPUGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    if (g_output_[0].IsDense()) {
-      return SingleGradientDef(
-          "CopyCPUToGPU", "", vector<string>{GO(0)}, vector<string>{GI(0)});
-    } else {
-      return vector<OperatorDef>{CreateOperatorDef(
-                                     "CopyCPUToGPU",
-                                     "",
-                                     std::vector<string>{GO_I(0)},
-                                     std::vector<string>{GI_I(0)}),
-                                 CreateOperatorDef(
-                                     "CopyCPUToGPU",
-                                     "",
-                                     std::vector<string>{GO_V(0)},
-                                     std::vector<string>{GI_V(0)})};
-    }
-  }
-};
-REGISTER_GRADIENT(CopyGPUToCPU, GetGPUToCPUGradient);
-
-struct GetCPUToGPUGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    if (g_output_[0].IsDense()) {
-      return SingleGradientDef(
-          "CopyGPUToCPU", "", vector<string>{GO(0)}, vector<string>{GI(0)});
-    } else {
-      return vector<OperatorDef>{CreateOperatorDef(
-                                     "CopyGPUToCPU",
-                                     "",
-                                     std::vector<string>{GO_I(0)},
-                                     std::vector<string>{GI_I(0)}),
-                                 CreateOperatorDef(
-                                     "CopyGPUToCPU",
-                                     "",
-                                     std::vector<string>{GO_V(0)},
-                                     std::vector<string>{GI_V(0)})};
-    }
-  }
-};
-REGISTER_GRADIENT(CopyCPUToGPU, GetCPUToGPUGradient);
-
-SHOULD_NOT_DO_GRADIENT(Unique);
-SHOULD_NOT_DO_GRADIENT(LengthsToSegmentIds);
-SHOULD_NOT_DO_GRADIENT(SegmentIdsToLengths);
-SHOULD_NOT_DO_GRADIENT(SegmentIdsToRanges);
-SHOULD_NOT_DO_GRADIENT(SegmentIdsToLengthWeights);
-SHOULD_NOT_DO_GRADIENT(GatherRangesOp);
-SHOULD_NOT_DO_GRADIENT(LengthsGather);
-SHOULD_NOT_DO_GRADIENT(AccumulateHistogram);
 
 template <>
 bool NanCheckOp<CPUContext>::RunOnDevice() {
@@ -928,7 +744,6 @@ bool NanCheckOp<CPUContext>::RunOnDevice() {
   return true;
 }
 REGISTER_CPU_OPERATOR(NanCheck, NanCheckOp<CPUContext>);
-REGISTER_GRADIENT(NanCheck, GetNanCheckGradient);
 
 OPERATOR_SCHEMA(NanCheck)
     .NumInputs(1, INT_MAX)
@@ -957,7 +772,6 @@ OPERATOR_SCHEMA(Size)
         "elements in the input tensor.");
 
 REGISTER_CPU_OPERATOR(Size, SizeOp<CPUContext>);
-NO_GRADIENT(Size);
 
 template <>
 template <typename T>
@@ -992,6 +806,5 @@ OPERATOR_SCHEMA(Range)
         "1D tensor of same type as inputs that contains the sequence.");
 
 REGISTER_CPU_OPERATOR(Range, RangeOp<CPUContext>);
-NO_GRADIENT(Range);
 
 } // namespace caffe2

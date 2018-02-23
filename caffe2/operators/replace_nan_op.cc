@@ -48,6 +48,5 @@ Replace the NaN (not a number) element in the input tensor with argument `value`
     .Input(0, "input", "Input tensor")
     .Input(1, "output", "Output tensor");
 
-SHOULD_NOT_DO_GRADIENT(ReplaceNaN);
 
 } // namespace caffe2

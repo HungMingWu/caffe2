@@ -93,25 +93,4 @@ Example:
 
 OPERATOR_SCHEMA(SliceGradient);
 
-namespace {
-struct GetSliceGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    if (def_.input_size() > 1) {
-      return vector<OperatorDef>{CreateOperatorDef(
-          "SliceGradient",
-          "",
-          std::vector<string>{I(0), I(1), I(2), GO(0)},
-          std::vector<string>{GI(0)})};
-    } else {
-      return vector<OperatorDef>{CreateOperatorDef(
-          "SliceGradient",
-          "",
-          std::vector<string>{I(0), GO(0)},
-          std::vector<string>{GI(0)})};
-    }
-  }
-};
-}
-REGISTER_GRADIENT(Slice, GetSliceGradient);
 } // namespace caffe2

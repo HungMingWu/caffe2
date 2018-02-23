@@ -178,15 +178,5 @@ OPERATOR_SCHEMA(ResizeNearestGradient)
     .Arg("width_scale", "Scale along width dimension")
     .Arg("height_scale", "Scale along height dimension");
 
-class GetResizeNearestGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef("ResizeNearestGradient",
-                             "",
-                             vector<string>{GO(0), I(0)},
-                             vector<string>{GI(0)});
-  }
-};
-REGISTER_GRADIENT(ResizeNearest, GetResizeNearestGradient);
 
 } // namespace caffe2

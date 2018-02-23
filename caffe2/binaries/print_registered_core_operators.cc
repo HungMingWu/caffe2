@@ -61,11 +61,5 @@ int main(int argc, char** argv) {
     }
   }
 
-  std::cout << "Operators that have gradients registered:" << std::endl;
-  for (const auto& key : caffe2::GradientRegistry()->Keys()) {
-    std::cout << "\t(schema: " << HasSchema(key) << ", doc: "
-              << HasDoc(key) << ")\t"
-              << key << std::endl;
-  }
   return 0;
 }

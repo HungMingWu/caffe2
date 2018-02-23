@@ -36,8 +36,6 @@ produces one output data (Tensor<T>) where z = c ? x : y is applied elementwise.
     .Input(2, "Y", "input tensor")
     .Output(0, "Z", "output tensor");
 
-SHOULD_NOT_DO_GRADIENT(Where);
-
 REGISTER_CPU_OPERATOR(IsMemberOf, IsMemberOfOp<CPUContext>);
 
 // Input: X, output: Y
@@ -63,8 +61,6 @@ is applied to the data tensor elementwise.
 )DOC")
     .Input(0, "X", "Input tensor of any shape")
     .Output(0, "Y", "Output tensor (same size as X containing booleans)");
-
-SHOULD_NOT_DO_GRADIENT(IsMemberOf);
 
 } // namespace
 

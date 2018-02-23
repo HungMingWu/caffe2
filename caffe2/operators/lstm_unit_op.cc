@@ -45,24 +45,4 @@ OPERATOR_SCHEMA(LSTMUnitGradient)
         "When false, the sequence lengths input is left out, "
         "and all following inputs are shifted left by one.");
 
-class GetLSTMUnitGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    if (GetFlagArgument(def_, "sequence_lengths", true)) {
-      return SingleGradientDef(
-          "LSTMUnitGradient",
-          "",
-          vector<string>{
-              I(0), I(1), I(2), I(3), I(4), O(0), O(1), GO(0), GO(1)},
-          vector<string>{GI(0), GI(1), GI(2)});
-    } else {
-      return SingleGradientDef(
-          "LSTMUnitGradient",
-          "",
-          vector<string>{I(0), I(1), I(2), I(3), O(0), O(1), GO(0), GO(1)},
-          vector<string>{GI(0), GI(1), GI(2)});
-    }
-  }
-};
-REGISTER_GRADIENT(LSTMUnit, GetLSTMUnitGradient);
 }

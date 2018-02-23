@@ -85,18 +85,4 @@ the label, and computes the elementwise criterion output as
 
 OPERATOR_SCHEMA(CosineEmbeddingCriterionGradient).NumInputs(3).NumOutputs(1);
 
-class GetCosineEmbeddingCriterionGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "CosineEmbeddingCriterionGradient",
-        "",
-        vector<string>{I(0), I(1), GO(0)},
-        vector<string>{GI(0)});
-  }
-};
-REGISTER_GRADIENT(
-    CosineEmbeddingCriterion,
-    GetCosineEmbeddingCriterionGradient);
-
 } // namespace caffe2

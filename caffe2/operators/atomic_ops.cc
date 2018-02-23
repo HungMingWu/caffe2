@@ -148,11 +148,6 @@ OPERATOR_SCHEMA(CheckAtomicBool)
     .Input(0, "atomic_bool", "Blob containing a unique_ptr<atomic<bool>>")
     .Output(0, "value", "Copy of the value for the atomic<bool>");
 
-SHOULD_NOT_DO_GRADIENT(CreateMutex);
-SHOULD_NOT_DO_GRADIENT(AtomicFetchAdd);
-SHOULD_NOT_DO_GRADIENT(CreateAtomicBool);
-SHOULD_NOT_DO_GRADIENT(ConditionalSetAtomicBool);
-SHOULD_NOT_DO_GRADIENT(CheckAtomicBool);
 }
 }
 }

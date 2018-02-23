@@ -145,12 +145,6 @@ Retrieve the current value from the counter.
     .Input(0, "counter", "A blob pointing to an instance of a counter.")
     .Output(0, "count", "current count value.");
 
-SHOULD_NOT_DO_GRADIENT(CreateCounter);
-SHOULD_NOT_DO_GRADIENT(ResetCounter);
-SHOULD_NOT_DO_GRADIENT(CountDown);
-SHOULD_NOT_DO_GRADIENT(CountUp);
-SHOULD_NOT_DO_GRADIENT(RetrieveCount);
-
 CAFFE_KNOWN_TYPE(std::unique_ptr<Counter<int64_t>>);
 REGISTER_BLOB_SERIALIZER(
     (TypeMeta::Id<std::unique_ptr<Counter<int64_t>>>()),

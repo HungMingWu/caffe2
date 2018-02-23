@@ -249,17 +249,6 @@ i.e. `SEGMENT_IDS[-1]+1`. Other dimensions are inherited from the input tensor.
       SIndex,
       Context,
       typename ReducerDef::template ReducerGradient<T, Context>>;
-  struct GetGradient : public GradientMakerBase {
-    using GradientMakerBase::GradientMakerBase;
-    vector<OperatorDef> GetGradientDefs() override {
-      return SingleGradientDef(
-          string(basename) + ReducerDef::name + "Gradient",
-          "",
-          vector<string>{I(0), O(0), GO(0), I(1)},
-          // no gradient on segment_ids!
-          vector<string>{GI(0)});
-    }
-  };
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -478,36 +467,6 @@ UnsortedSegment{op} but as if all input slices belong to a single segment.
       true>;
   using BackwardOp =
       AbstractReduceFrontOrBackGradientOp<T, Context, ReducerGradient, true>;
-  struct GetGradient : public GradientMakerBase {
-    using GradientMakerBase::GradientMakerBase;
-    vector<OperatorDef> GetGradientDefs() override {
-      // Have utility function generating these names?
-      string tmp_dims = "_" + O(0) + "_dims";
-
-      vector<string> grad_ins;
-      for (const int i : ReducerGradient::originalInputs()) {
-        grad_ins.push_back(I(i));
-      }
-      grad_ins.push_back(GO(0));
-      grad_ins.push_back(tmp_dims);
-
-      vector<Argument> args;
-      if (ArgumentHelper::HasArgument(def_, "num_reduce_dim")) {
-        args.push_back(GetArgument(def_, "num_reduce_dim"));
-      }
-      // FIXME: pass in num_reduce_dims?!
-      return vector<OperatorDef>{
-          CreateOperatorDef(
-              "Shape", "", vector<string>{I(0)}, vector<string>{tmp_dims}),
-          CreateOperatorDef(
-              string(basename) + ReducerDef::name + "Gradient",
-              "",
-              grad_ins,
-              // no gradient on auxiliary inputs for now
-              vector<string>{GI(0)}),
-      };
-    }
-  };
 };
 
 template <typename T, typename Context, typename ReducerDef>
@@ -545,36 +504,6 @@ UnsortedSegment{op} but as if all input slices belong to a single segment.
       false>;
   using BackwardOp =
       AbstractReduceFrontOrBackGradientOp<T, Context, ReducerGradient, false>;
-  struct GetGradient : public GradientMakerBase {
-    using GradientMakerBase::GradientMakerBase;
-    vector<OperatorDef> GetGradientDefs() override {
-      // Have utility function generating these names?
-      string tmp_dims = "_" + O(0) + "_dims";
-
-      vector<string> grad_ins;
-      for (const int i : ReducerGradient::originalInputs()) {
-        grad_ins.push_back(I(i));
-      }
-      grad_ins.push_back(GO(0));
-      grad_ins.push_back(tmp_dims);
-
-      vector<Argument> args;
-      if (ArgumentHelper::HasArgument(def_, "num_reduce_dim")) {
-        args.push_back(GetArgument(def_, "num_reduce_dim"));
-      }
-      // FIXME: pass in num_reduce_dims?!
-      return vector<OperatorDef>{
-          CreateOperatorDef(
-              "Shape", "", vector<string>{I(0)}, vector<string>{tmp_dims}),
-          CreateOperatorDef(
-              string(basename) + ReducerDef::name + "Gradient",
-              "",
-              grad_ins,
-              // no gradient on auxiliary inputs for now
-              vector<string>{GI(0)}),
-      };
-    }
-  };
 };
 
 /**
@@ -833,39 +762,6 @@ class AbstractSortedSegmentGradientOp : public Operator<Context> {
   };
 };
 
-// base implementation of sorted/unsorted sparse/non-sparse gradient computation
-template <
-    typename ForwardOp,
-    typename ReducerDef,
-    typename ReducerGradient,
-    bool Sorted,
-    bool SparseFused>
-struct SegmentOpGetGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    CAFFE_ENFORCE(
-        !ReducerGradient::requiresDataInput(Def()),
-        "grads on aux inputs are not yet implemented for Segment operators.");
-    vector<string> grad_ins;
-    for (const int i : ReducerGradient::originalInputs()) {
-      grad_ins.push_back(I(i));
-    }
-    grad_ins.push_back(GO(0));
-    grad_ins.push_back(I(ForwardOp::SEGMENT_IDS));
-    vector<OperatorDef> r{CreateOperatorDef(
-        string(Sorted ? "SortedSegment" : "UnsortedSegment") +
-            ReducerDef::name + "Gradient",
-        "",
-        grad_ins,
-        // no gradient on segment_ids or auxiliary inputs for now
-        vector<string>{SparseFused ? GI_V(0) : GI(0)})};
-    if (SparseFused) {
-      SetSparse(0, I(ForwardOp::INDICES), GI_V(0));
-    }
-    return r;
-  }
-};
-
 template <typename T, typename SIndex, typename Context, typename ReducerDef>
 struct AbstractSortedSegmentDef {
   using OpDef = ReducerDef;
@@ -904,12 +800,6 @@ i.e. `SEGMENT_IDS[-1]+1`. Other dimensions are inherited from the input tensor.
   using ForwardOp = AbstractSortedSegmentOp<T, SIndex, Context, Reducer, false>;
   using BackwardOp =
       AbstractSortedSegmentGradientOp<T, SIndex, Context, ReducerGradient>;
-  using GetGradient = SegmentOpGetGradient<
-      ForwardOp,
-      ReducerDef,
-      ReducerGradient,
-      true /*Sorted*/,
-      false /*SparseFused*/>;
 };
 
 template <typename T, typename SIndex, typename Context, typename ReducerDef>
@@ -963,12 +853,6 @@ i.e. `SEGMENT_IDS[-1]+1`. Other dimensions are inherited from the input tensor.
   // consider avoiding op duplication here
   using BackwardOp =
       AbstractSortedSegmentGradientOp<T, SIndex, Context, ReducerGradient>;
-  using GetGradient = SegmentOpGetGradient<
-      ForwardOp,
-      ReducerDef,
-      ReducerGradient,
-      true /*Sorted*/,
-      true /*SparseFused*/>;
 };
 
 /**
@@ -1302,12 +1186,6 @@ tensor.
       false>;
   using BackwardOp =
       AbstractUnsortedSegmentGradientOp<T, SIndex, Context, ReducerGradient>;
-  using GetGradient = SegmentOpGetGradient<
-      ForwardOp,
-      ReducerDef,
-      ReducerGradient,
-      false /*Sorted*/,
-      false /*SparseFused*/>;
 };
 
 template <typename T, typename SIndex, typename Context, typename ReducerDef>
@@ -1362,12 +1240,6 @@ tensor.
   // consider avoiding op duplication here
   using BackwardOp =
       AbstractUnsortedSegmentGradientOp<T, SIndex, Context, ReducerGradient>;
-  using GetGradient = SegmentOpGetGradient<
-      ForwardOp,
-      ReducerDef,
-      ReducerGradient,
-      false /*Sorted*/,
-      true /*SparseFused*/>;
 };
 
 /**
@@ -1838,69 +1710,6 @@ class AbstractLengthsWithMainInputAndForwardOutputGradientOp
   };
 };
 
-// base implementation of sparse/non-sparse gradient computation
-template <
-    typename ForwardOp,
-    typename ReducerDef,
-    typename ReducerGradient,
-    bool SparseFused,
-    bool GradientNeedIndices = false>
-struct LengthsOpGetGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    vector<string> grad_ins;
-    string suffix = "Gradient";
-    for (const int i : ReducerGradient::originalInputs()) {
-      grad_ins.push_back(I(i));
-    }
-    if (ReducerGradient::requiresForwardOutput()) {
-      grad_ins.push_back(O(0));
-      CAFFE_ENFORCE(
-          !SparseFused,
-          "Forward pass output not yet supported as input for backward pass "
-          "for SparseLengthsXXX operators");
-      suffix = "AndForwardOutput" + suffix;
-    }
-    grad_ins.push_back(GO(0));
-    grad_ins.push_back(I(ForwardOp::LENGTHS));
-    bool indices_pushed = false;
-    if (ReducerGradient::requiresDataInput(Def())) {
-      grad_ins.push_back(I(0));
-      if (SparseFused) {
-        grad_ins.push_back(I(ForwardOp::INDICES));
-        indices_pushed = true;
-      }
-      suffix = "WithMainInput" + suffix;
-    }
-    if (GradientNeedIndices && !indices_pushed) {
-      if (SparseFused) {
-        grad_ins.push_back(I(ForwardOp::INDICES));
-      } else {
-        // Hacky: using Input as Indices, remove this after we have specialized
-        // cuda LengthsIndicesInGradientSumGradient
-        grad_ins.push_back(I(0));
-      }
-    }
-    vector<string> grad_outs;
-    grad_outs.push_back({SparseFused ? GI_V(0) : GI(0)});
-    int aux_grads = ReducerGradient::numAuxInputsWithGrads(Def());
-    for (int i = 1; i <= aux_grads; ++i) {
-      grad_outs.push_back(GI(i));
-    }
-    vector<OperatorDef> r{CreateOperatorDef(
-        string(SparseFused ? "SparseLengths" : "Lengths") +
-            string(GradientNeedIndices ? "IndicesInGradient" : "") +
-            ReducerDef::name + suffix,
-        "",
-        grad_ins,
-        grad_outs)};
-    if (SparseFused) {
-      SetSparse(0, I(ForwardOp::INDICES), GI_V(0));
-    }
-    return r;
-  }
-};
-
 template <
     typename T,
     typename SIndex,
@@ -1969,12 +1778,6 @@ i.e. `len(LENGTHS)`. Other dimensions are inherited from the input tensor.
           SIndex,
           Context,
           ReducerGradient>;
-  using GetGradient = LengthsOpGetGradient<
-      ForwardOp,
-      ReducerDef,
-      ReducerGradient,
-      false /*SparseFused*/,
-      GradientNeedIndices>;
 };
 
 template <
@@ -2046,13 +1849,6 @@ i.e. `len(LENGTHS)`. Other dimensions are inherited from the input tensor.
       SIndex,
       Context,
       ReducerGradient>;
-  // Will return 3 input version. This is aliging new CPU/GPU nets.
-  using GetGradient = LengthsOpGetGradient<
-      ForwardOp,
-      ReducerDef,
-      ReducerGradient,
-      true /*SparseFused*/,
-      GradientNeedIndices>;
 };
 } // namespace caffe2
 

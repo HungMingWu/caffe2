@@ -232,7 +232,6 @@ returned boxes.
         "keeps_size",
         "Optional number of filtered indices per class, size (num_classes)");
 
-SHOULD_NOT_DO_GRADIENT(BoxWithNMSLimit);
 
 } // namespace
 } // namespace caffe2

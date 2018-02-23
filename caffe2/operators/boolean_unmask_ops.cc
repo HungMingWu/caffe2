@@ -118,5 +118,4 @@ We get:
 )DOC")
     .Output(0, "unmasked_data", "The final reconstructed unmasked data");
 
-NO_GRADIENT(BooleanUnmask)
 }

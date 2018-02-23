@@ -45,7 +45,6 @@ stores the scale, bias and then quantized values).
         "LENGTHS",
         "Vector with the same sum of elements as the first dimension of DATA")
     .Output(0, "output", "output");
-NO_GRADIENT(SparseLengthsSumFused8BitRowwise);
 
 REGISTER_CPU_OPERATOR(
     SparseLengthsWeightedSumFused8BitRowwise,
@@ -78,7 +77,6 @@ but operating on 8-bit rowwise quantized matrices with fused storage
         "Vector of weights to scale rows of DATA with before reduction")
     .Output(0, "output", "output");
 
-NO_GRADIENT(SparseLengthsWeightedSumFused8BitRowwise);
 
 REGISTER_CPU_OPERATOR(
     SparseLengthsMeanFused8BitRowwise,
@@ -109,5 +107,4 @@ operating on 8-bit rowwise quantized matrices with fused storage
         "LENGTHS",
         "Vector with the same sum of elements as the first dimension of DATA")
     .Output(0, "output", "output");
-NO_GRADIENT(SparseLengthsMeanFused8BitRowwise);
 } // namespace caffe2

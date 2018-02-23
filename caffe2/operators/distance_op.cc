@@ -368,16 +368,6 @@ of the L2 difference between X and Y that is computed as ||(X - Y)^2 / 2||.
 
 OPERATOR_SCHEMA(SquaredL2DistanceGradient).NumInputs(3).NumOutputs(2);
 
-class GetSquaredL2DistanceGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "SquaredL2DistanceGradient", "",
-        vector<string>{I(0), I(1), GO(0)},
-        vector<string>{GI(0), GI(1)});
-  }
-};
-REGISTER_GRADIENT(SquaredL2Distance, GetSquaredL2DistanceGradient);
 
 // L1
 REGISTER_CPU_OPERATOR(L1Distance, L1DistanceOp<float, CPUContext>);
@@ -399,18 +389,6 @@ of the L1 difference between X and Y, computed as L1(x,y) = sum over |x-y|
 
 OPERATOR_SCHEMA(L1DistanceGradient).NumInputs(3).NumOutputs(2);
 
-class GetL1DistanceGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "L1DistanceGradient",
-        "",
-        vector<string>{I(0), I(1), GO(0)},
-        vector<string>{GI(0), GI(1)});
-  }
-};
-
-REGISTER_GRADIENT(L1Distance, GetL1DistanceGradient);
 
 // Dot Product
 REGISTER_CPU_OPERATOR(DotProduct, DotProductOp<float, CPUContext>);
@@ -432,17 +410,6 @@ of the dot product between X and Y.
 
 OPERATOR_SCHEMA(DotProductGradient).NumInputs(3).NumOutputs(2);
 
-class GetDotProductGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "DotProductGradient",
-        "",
-        vector<string>{I(0), I(1), GO(0)},
-        vector<string>{GI(0), GI(1)});
-  }
-};
-REGISTER_GRADIENT(DotProduct, GetDotProductGradient);
 
 // Cosine Similarity
 REGISTER_CPU_OPERATOR(CosineSimilarity, CosineSimilarityOp<float, CPUContext>);
@@ -464,17 +431,6 @@ of the cosine similarity between X and Y.
 
 OPERATOR_SCHEMA(CosineSimilarityGradient).NumInputs(3).NumOutputs(2);
 
-class GetCosineSimilarityGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "CosineSimilarityGradient",
-        "",
-        vector<string>{I(0), I(1), GO(0)},
-        vector<string>{GI(0), GI(1)});
-  }
-};
-REGISTER_GRADIENT(CosineSimilarity, GetCosineSimilarityGradient);
 
 // Dot Product allows padding
 REGISTER_CPU_OPERATOR(
@@ -505,29 +461,4 @@ can be padded.
 
 OPERATOR_SCHEMA(DotProductWithPaddingGradient).NumInputs(3).NumOutputs(2);
 
-class GetDotProductWithPaddingGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    float pad_value = 0;
-    bool replicate = false;
-    if (ArgumentHelper::HasArgument(Def(), "pad_value")) {
-      pad_value = GetArgument(Def(), "pad_value").f();
-    }
-    if (ArgumentHelper::HasArgument(Def(), "replicate")) {
-      replicate = GetArgument(Def(), "replicate").i();
-    }
-
-    const auto dot_arg =
-        vector<Argument>{MakeArgument<float>("pad_value", pad_value),
-                         MakeArgument<bool>("replicate", replicate)};
-
-    return SingleGradientDef(
-        "DotProductWithPaddingGradient",
-        "",
-        vector<string>{I(0), I(1), GO(0)},
-        vector<string>{GI(0), GI(1)},
-        dot_arg);
-  }
-};
-REGISTER_GRADIENT(DotProductWithPadding, GetDotProductWithPaddingGradient);
 }  // namespace caffe2

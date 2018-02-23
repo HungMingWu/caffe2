@@ -201,24 +201,5 @@ OPERATOR_SCHEMA(UnpackSegments)
     .Input(1, "tensor", "N+1 dim Tensor.")
     .Output(0, "packed_tensor", "N dim Tensor");
 
-class GetPackSegmentsGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "UnpackSegments",
-        "",
-        vector<string>{I(0), GO(0)},
-        vector<string>{GI(1)});
-  }
-};
-REGISTER_GRADIENT(PackSegments, GetPackSegmentsGradient);
 
-class GetUnpackSegmentsGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "PackSegments", "", vector<string>{I(0), GO(0)}, vector<string>{GI(1)});
-  }
-};
-REGISTER_GRADIENT(UnpackSegments, GetUnpackSegmentsGradient);
 } // namespace caffe2

@@ -62,14 +62,6 @@ Flattens the input tensor into a 2D matrix. If input tensor has shape
         "(Default to 1) Indicate up to which input dimensions "
         "(exclusive) should be flattened to the outer dimension of the output");
 
-class GetFlattenGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "ResizeLike", "", vector<string>{GO(0), I(0)}, vector<string>{GI(0)});
-  }
-};
 
-REGISTER_GRADIENT(Flatten, GetFlattenGradient);
 
 } // namespace caffe2

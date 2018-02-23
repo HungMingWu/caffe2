@@ -78,16 +78,5 @@ chain rule and derivatives of the selu function.
     .Input(0, "Y", "input tensor")
     .Input(1, "dY", "input tensor");
 
-class GetSeluGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        def_.type() + "Gradient",
-        "",
-        vector<string>{O(0), GO(0)},
-        vector<string>{GI(0)});
-  }
-};
-REGISTER_GRADIENT(Selu, GetSeluGradient);
 
 } // namespace caffe2

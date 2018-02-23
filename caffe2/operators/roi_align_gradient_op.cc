@@ -235,21 +235,5 @@ OPERATOR_SCHEMA(RoIAlignGradient)
     .Input(2, "dY", "Gradient of forward output 0 (Y)")
     .Output(0, "dX", "Gradient of forward input 0 (X)");
 
-namespace {
-
-class GetRoIAlignGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "RoIAlignGradient",
-        "",
-        vector<string>{I(0), I(1), GO(0)},
-        vector<string>{GI(0)});
-  }
-};
-
-} // namespace
-
-REGISTER_GRADIENT(RoIAlign, GetRoIAlignGradient);
 
 } // namespace caffe2

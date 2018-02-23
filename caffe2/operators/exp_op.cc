@@ -48,15 +48,4 @@ and output blobs.
         "The exponential of the input tensor computed "
         "element-wise");
 
-class GetExpGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "Mul",
-        "",
-        std::vector<string>{O(0), GO(0)},
-        std::vector<string>{GI(0)});
-  }
-};
-REGISTER_GRADIENT(Exp, GetExpGradient);
 } // namespace caffe2

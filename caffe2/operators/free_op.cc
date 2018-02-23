@@ -18,7 +18,6 @@
 
 namespace caffe2 {
 REGISTER_CPU_OPERATOR(Free, FreeOp<CPUContext>);
-SHOULD_NOT_DO_GRADIENT(Free);
 
 OPERATOR_SCHEMA(Free)
     .NumInputs(1, INT_MAX)

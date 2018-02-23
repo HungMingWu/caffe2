@@ -595,19 +595,6 @@ used by the gradient operator to compute gradients for all samples in the batch.
 
 OPERATOR_SCHEMA(HSoftmaxGradient).NumInputs(6).NumOutputs(4);
 
-class GetHSoftmaxGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "HSoftmaxGradient", "",
-        //X, W, b, label, intermediate output, dY
-        vector<string>{I(0), I(1), I(2), I(3), O(1), GO(0)},
-        //dX, dW, db, dintermediate_output
-        vector<string>{GI(0), GI(1), GI(2), GO(1)});
-  }
-};
-REGISTER_GRADIENT(HSoftmax, GetHSoftmaxGradient);
-
 OPERATOR_SCHEMA(HSoftmaxSearch)
     .NumInputs(3)
     .NumOutputs(2)
@@ -637,7 +624,6 @@ search tree.
         "For nodes, it will be the name defined in the tree. "
         "For leafs, it will be the index of the word in the tree.")
     .Output(1, "Y_scores", "The corresponding scores of Y_names");
-SHOULD_NOT_DO_GRADIENT(HSoftmaxSearch);
 
 OPERATOR_SCHEMA(HuffmanTreeHierarchy)
     .NumInputs(1)
@@ -650,6 +636,5 @@ the input labels. It returns the tree as seralized HierarchyProto
     .Input(0, "Labels", "The labels vector")
     .Output(0, "Hierarch", "Huffman coding hierarchy of the labels");
 
-SHOULD_NOT_DO_GRADIENT(HuffmanTreeHierarchyOp);
 }  // namespace
 }  // namespace caffe2

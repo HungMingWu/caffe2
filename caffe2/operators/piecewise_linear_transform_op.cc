@@ -96,5 +96,4 @@ bound.
         "2-D tensor (Tensor<float>) of size (num_batches x num_classes) "
         "containing transformed predictions");
 
-SHOULD_NOT_DO_GRADIENT(PiecewiseLinearTransform);
 } // namespace caffe2

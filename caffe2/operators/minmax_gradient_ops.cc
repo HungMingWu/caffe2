@@ -51,32 +51,4 @@ bool SelectGradientOpBase<T, Context>::RunOnDevice() {
   return true;
 }
 
-class GetMaxGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    auto gradInputs = vector<string>();
-    auto inputs = vector<string>{O(0), GO(0)};
-    for (int i = 0; i < def_.input_size(); i++) {
-      gradInputs.push_back(GI(i));
-      inputs.push_back(I(i));
-    }
-    return SingleGradientDef("MaxGradient", "", inputs, gradInputs);
-  }
-};
-REGISTER_GRADIENT(Max, GetMaxGradient);
-
-class GetMinGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    auto gradInputs = vector<string>();
-    auto inputs = vector<string>{O(0), GO(0)};
-    for (int i = 0; i < def_.input_size(); i++) {
-      gradInputs.push_back(GI(i));
-      inputs.push_back(I(i));
-    }
-    return SingleGradientDef("MinGradient", "", inputs, gradInputs);
-  }
-};
-REGISTER_GRADIENT(Min, GetMinGradient);
-
 } // namespace caffe2

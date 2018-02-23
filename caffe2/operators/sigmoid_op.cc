@@ -74,14 +74,4 @@ SigmoidGradient takes both Y and dY and uses this to update dX according to the
 chain rule and derivatives of the sigmoid function.
 )DOC");
 
-class GetSigmoidGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "SigmoidGradient", "",
-        vector<string>{O(0), GO(0)},
-        vector<string>{GI(0)});
-  }
-};
-REGISTER_GRADIENT(Sigmoid, GetSigmoidGradient);
 }  // namespace caffe2

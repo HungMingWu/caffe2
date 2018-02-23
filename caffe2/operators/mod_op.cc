@@ -63,6 +63,5 @@ provided by the operator argument `divisor`.
     .Input(0, "data", "input int32 or int64 data")
     .Output(0, "output", "output of data with modulo operation applied");
 
-SHOULD_NOT_DO_GRADIENT(ModOp);
 } // namespace
 } // namespace caffe2

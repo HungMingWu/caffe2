@@ -62,22 +62,6 @@ OPERATOR_SCHEMA(QuantDecodeGradient)
     .NumInputs([](int in) { return in >= 3 && in % 2 == 1; })
     .NumOutputs(1);
 
-class GetQuantDecodeGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    CAFFE_ENFORCE_EQ(Def().input_size(), Def().output_size() + 1);
-    vector<string> gradient_op_inputs;
-    for (int i = 0; i < Def().input_size(); i++) {
-      gradient_op_inputs.push_back(I(i));
-    }
-    for (int i = 0; i < Def().output_size(); i++) {
-      gradient_op_inputs.push_back(GO(i));
-    }
-    return SingleGradientDef(
-        "QuantDecodeGradient", "", gradient_op_inputs, vector<string>{GI(0)});
-  }
-};
 
-REGISTER_GRADIENT(QuantDecode, GetQuantDecodeGradient);
 
 } // namespace caffe2

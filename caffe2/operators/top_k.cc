@@ -231,17 +231,4 @@ first.
 
 OPERATOR_SCHEMA(TopKGradient).NumInputs(3).NumOutputs(1);
 
-class GetTopKGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "TopKGradient",
-        "",
-        vector<string>{GO(0), O(1), I(0)},
-        vector<string>{GI(0)});
-  }
-};
-
-REGISTER_GRADIENT(TopK, GetTopKGradient);
-
 } // namespace caffe2

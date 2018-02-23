@@ -45,15 +45,4 @@ Example:
 
 )DOC");
 
-class GetSquareRootDivideGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "SquareRootDivide",
-        "",
-        vector<string>{GO(0), I(1)},
-        vector<string>{GI(0)});
-  }
-};
-REGISTER_GRADIENT(SquareRootDivide, GetSquareRootDivideGradient);
 } // namespace caffe2

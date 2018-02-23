@@ -36,6 +36,5 @@ unique but with the range [0, blocks_size). Indices could be empty.
         "indices",
         "indices of duplicate elements in data, excluding first occurrences.");
 
-SHOULD_NOT_DO_GRADIENT(FindDuplicateElements);
 } // namespace
 } // namespace caffe2

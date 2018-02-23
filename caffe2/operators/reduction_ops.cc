@@ -54,18 +54,6 @@ OPERATOR_SCHEMA(SumSqrElements)
 
 OPERATOR_SCHEMA(SumElementsGradient).NumInputs(2).NumOutputs(1);
 
-class GetSumElementsGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "SumElementsGradient",
-        "",
-        vector<string>{I(0), GO(0)},
-        vector<string>{GI(0)});
-  }
-};
-REGISTER_GRADIENT(SumElements, GetSumElementsGradient);
-
 OPERATOR_SCHEMA(RowwiseMax)
     .NumInputs(1)
     .NumOutputs(1)
@@ -77,17 +65,6 @@ OPERATOR_SCHEMA(RowwiseMax)
     .Output(0, "Y", "batch_size x M rowwise-max results matrix.");
 
 OPERATOR_SCHEMA(RowwiseMaxGradient).NumInputs(3).NumOutputs(1);
-class GetRowwiseMaxGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "RowwiseMaxGradient",
-        "",
-        vector<string>{I(0), O(0), GO(0)},
-        vector<string>{GI(0)});
-  }
-};
-REGISTER_GRADIENT(RowwiseMax, GetRowwiseMaxGradient);
 
 OPERATOR_SCHEMA(ColwiseMaxGradient);
 
@@ -102,17 +79,6 @@ OPERATOR_SCHEMA(ColwiseMax)
     .Output(0, "Y", "batch_size x N column-max results matrix.");
 
 OPERATOR_SCHEMA(ColumnMaxGradient).NumInputs(3).NumOutputs(1);
-class GetColwiseMaxGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "ColwiseMaxGradient",
-        "",
-        vector<string>{I(0), O(0), GO(0)},
-        vector<string>{GI(0)});
-  }
-};
-REGISTER_GRADIENT(ColwiseMax, GetColwiseMaxGradient);
 
 template <typename T, class Context>
 bool SumElementsGradientOp<T, Context>::RunOnDevice()

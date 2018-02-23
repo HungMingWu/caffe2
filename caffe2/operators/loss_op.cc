@@ -36,15 +36,5 @@ value which represents the average of input data (average of the losses).
 
 OPERATOR_SCHEMA(AveragedLossGradient).NumInputs(2).NumOutputs(1);
 
-class GetAveragedLossGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "AveragedLossGradient", "",
-        vector<string>{I(0), GO(0)},
-        vector<string>{GI(0)});
-  }
-};
-REGISTER_GRADIENT(AveragedLoss, GetAveragedLossGradient);
 
 }  // namespace caffe2

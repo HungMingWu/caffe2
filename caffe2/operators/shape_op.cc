@@ -32,6 +32,5 @@ OPERATOR_SCHEMA(Shape)
     })
     .SetDoc("Produce a 1D int64 tensor with the shape of the input tensor.");
 
-SHOULD_NOT_DO_GRADIENT(Shape);
 
 } // namespace caffe2

@@ -122,10 +122,5 @@ X_0_part_0, X_1_part_0, ..., X_N-1_part_0, X_0_part_1, ..., X_N-1_part_K-1
         "Output Partitions. The number of output tensors has to be a "
         "multiple of the number of input tensors.");
 
-// This should actually have gradient, but for now nothing uses it.
-// Because gradient computation right now is not input/output aware it can't be
-// GRADIENT_NOT_IMPLEMENTEDYET
-NO_GRADIENT(Partition);
-NO_GRADIENT(LengthsPartition);
 } // namespace
 } // namespace caffe2

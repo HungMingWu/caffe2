@@ -31,5 +31,4 @@ and in the gradient computation phase stops the gradient from being computed
 through it.
 )DOC");
 
-NO_GRADIENT(StopGradient);
 }  // namespace caffe2

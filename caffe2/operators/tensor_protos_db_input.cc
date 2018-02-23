@@ -44,5 +44,4 @@ corresponding index in the TensorProtos objects in the DB.
           "DB as values. Each output tensor will be of size specified by the "
           "'batch_size' argument of the operator");
 
-NO_GRADIENT(TensorProtosDBInput);
 }  // namespace caffe2

@@ -45,21 +45,4 @@ the height and width dimensions.
 
 )DOC");
 
-class GetSpaceToBatchGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "BatchToSpace", "", vector<string>{GO(0)}, vector<string>{GI(0)});
-  }
-};
-
-class GetBatchToSpaceGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "SpaceToBatch", "", vector<string>{GO(0)}, vector<string>{GI(0)});
-  }
-};
-REGISTER_GRADIENT(SpaceToBatch, GetSpaceToBatchGradient);
-REGISTER_GRADIENT(BatchToSpace, GetBatchToSpaceGradient);
 }

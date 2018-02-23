@@ -74,16 +74,5 @@ OPERATOR_SCHEMA(SoftplusGradient)
     .NumOutputs(1)
     .AllowInplace({{1, 0}});
 
-class GetSoftplusGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "SoftplusGradient",
-        "",
-        vector<string>{O(0), GO(0)},
-        vector<string>{GI(0)});
-  }
-};
-REGISTER_GRADIENT(Softplus, GetSoftplusGradient);
 
 } // namespace caffe2

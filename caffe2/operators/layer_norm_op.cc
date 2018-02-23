@@ -151,23 +151,6 @@ OPERATOR_SCHEMA(LayerNormGradient).NumInputs(5).NumOutputs(1);
 
 REGISTER_CPU_OPERATOR(LayerNormGradient, LayerNormGradientOp<CPUContext>);
 
-namespace {
-
-class GetLayerNormGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "LayerNormGradient",
-        "",
-        vector<string>{GO(0), O(0), O(1), O(2), I(0)},
-        vector<string>{GI(0)});
-  }
-};
-
-}  // namespace
-
-REGISTER_GRADIENT(LayerNorm, GetLayerNormGradient);
-
 OPERATOR_SCHEMA(LayerNorm)
     .NumInputs(1)
     .NumOutputs(3)

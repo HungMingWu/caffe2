@@ -87,16 +87,5 @@ OPERATOR_SCHEMA(LogitGradient)
     .Output(0, "dX", "output float tensor")
     .Arg("eps", "small positive epsilon value, the default is 1e-6.");
 
-class GetLogitGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return vector<OperatorDef>{CreateOperatorDef(
-        "LogitGradient",
-        "",
-        std::vector<string>{I(0), GO(0)},
-        std::vector<string>{GI(0)})};
-  }
-};
 
-REGISTER_GRADIENT(Logit, GetLogitGradient);
 } // namespace caffe2

@@ -202,7 +202,4 @@ OPERATOR_SCHEMA(TextFileReaderRead)
     .Input(0, "handler", "Pointer to an existing TextFileReaderInstance.")
     .Arg("batch_size", "Maximum number of rows to read.");
 
-NO_GRADIENT(CreateTextFileReader);
-NO_GRADIENT(TextFileReaderRead);
-
 } // namespace caffe2

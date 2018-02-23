@@ -35,7 +35,6 @@ specified number. All input and output indices are enforced to be positive.
     .Arg("seed", "seed for the hash function")
     .Arg("modulo", "must be > 0, hashed ids will be modulo this number");
 
-SHOULD_NOT_DO_GRADIENT(IndexHash);
 
 } // namespace
 } // namespace caffe2

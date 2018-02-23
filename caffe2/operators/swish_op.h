@@ -38,15 +38,5 @@ class SwishGradientOp final : public Operator<Context> {
   OUTPUT_TAGS(DX);
 };
 
-class GetSwishGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "SwishGradient",
-        "",
-        vector<string>{I(0), O(0), GO(0)},
-        vector<string>{GI(0)});
-  }
-};
 
 } // namespace caffe2

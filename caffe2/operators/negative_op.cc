@@ -45,14 +45,4 @@ Computes the element-wise negative of the input.
     .Input(0, "X", "1D input tensor")
     .Output(0, "Y", "1D input tensor");
 
-class GetNegativeGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "Negative", "",
-        vector<string>{GO(0)},
-        vector<string>{GI(0)});
-  }
-};
-REGISTER_GRADIENT(Negative, GetNegativeGradient);
 }  // namespace caffe2

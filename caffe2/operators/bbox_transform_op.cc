@@ -59,7 +59,6 @@ Transform proposal bounding boxes to target bounding box using bounding box
         "Pixel coordinates of the transformed bounding boxes,"
         "Size (M, 4*K), format [x1, y1, x2, y2]");
 
-SHOULD_NOT_DO_GRADIENT(BBoxTransform);
 } // namespace
 
 template <>

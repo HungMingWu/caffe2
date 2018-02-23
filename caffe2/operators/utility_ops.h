@@ -45,17 +45,6 @@ class NanCheckOp final : public Operator<Context> {
   Tensor<Context> scratch_;
 };
 
-struct GetNanCheckGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  std::vector<OperatorDef> GetGradientDefs() override {
-    return {CreateOperatorDef(
-        "NanCheck",
-        "",
-        std::vector<string>{GO(0)},
-        std::vector<string>{GI(0)})};
-  }
-};
-
 template <class Context>
 class WallClockTimeOp final : public Operator<Context> {
  public:

@@ -177,18 +177,7 @@ This method heuristically optimizes the NDCG.
 )DOC");
 OPERATOR_SCHEMA(LambdaRankNdcgGradient).NumInputs(3).NumOutputs(1);
 
-class GetLambdaRankNdcgGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "LambdaRankNdcgGradient",
-        "",
-        vector<string>{I(0), O(1), GO(0)},
-        vector<string>{GI(0)});
-  }
-};
 
-REGISTER_GRADIENT(LambdaRankNdcg, GetLambdaRankNdcgGradient);
 
 } // namespace
 

@@ -77,14 +77,4 @@ are the same.
 
 OPERATOR_SCHEMA(ClipGradient).NumInputs(2).NumOutputs(1).AllowInplace({{1, 0}});
 
-class GetClipGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "ClipGradient", "",
-        vector<string>{O(0), GO(0)},
-        vector<string>{GI(0)});
-  }
-};
-REGISTER_GRADIENT(Clip, GetClipGradient);
 }  // namespace caffe2

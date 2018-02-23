@@ -111,16 +111,4 @@ uses them to update dX1, and dX2 according to the chain rule
 and derivatives of the loss function.
 )DOC");
 
-class GetMarginRankingCriterionGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "MarginRankingCriterionGradient",
-        "",
-        vector<string>{I(0), I(1), I(2), GO(0)},
-        vector<string>{GI(0), GI(1)});
-  }
-};
-REGISTER_GRADIENT(MarginRankingCriterion, GetMarginRankingCriterionGradient);
-
 } // namespace caffe2

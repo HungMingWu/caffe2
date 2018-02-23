@@ -147,25 +147,4 @@ will throw errors.
 OPERATOR_SCHEMA(FCGradient).NumInputs(3).NumOutputs(2, 3);
 OPERATOR_SCHEMA(FCTransposedGradient).NumInputs(3).NumOutputs(2, 3);
 
-namespace {
-
-class GetFCGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-
-  std::vector<OperatorDef> GetGradientDefs() override {
-    CAFFE_ENFORCE_EQ(def_.input_size(), 3);
-    CAFFE_ENFORCE(def_.type() == "FC" || def_.type() == "FCTransposed");
-    return SingleGradientDef(
-        def_.type() + "Gradient",
-        "",
-        vector<string>{I(0), I(1), GO(0)},
-        vector<string>{GI(1), GI(2), GI(0)});
-  }
-};
-
-REGISTER_GRADIENT(FC, GetFCGradient);
-REGISTER_GRADIENT(FCTransposed, GetFCGradient);
-
-} // namespace
-
 } // namespace caffe2

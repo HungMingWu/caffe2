@@ -33,8 +33,6 @@ bool CreateScopeOp<CPUContext>::RunOnDevice() {
 
 REGISTER_CPU_OPERATOR(CreateScope, CreateScopeOp<CPUContext>);
 
-SHOULD_NOT_DO_GRADIENT(CreateScope);
-
 OPERATOR_SCHEMA(CreateScope).NumInputs(0).NumOutputs(1).SetDoc(R"DOC(
 'CreateScope' operator initializes and outputs empty scope that is used
 by Do operator to store local blobs
@@ -51,8 +49,6 @@ bool HasScopeOp<CPUContext>::RunOnDevice() {
 }
 
 REGISTER_CPU_OPERATOR(HasScope, HasScopeOp<CPUContext>);
-
-SHOULD_NOT_DO_GRADIENT(HasScope);
 
 OPERATOR_SCHEMA(HasScope).NumInputs(1).NumOutputs(1).SetDoc(R"DOC(
 Checks whether scope blob has any saved scopes left

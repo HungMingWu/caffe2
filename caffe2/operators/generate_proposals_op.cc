@@ -314,9 +314,5 @@ non-maximum suppression is applied to generate the final bounding boxes.
 // For backward compatibility
 OPERATOR_SCHEMA(GenerateProposalsCPP).NumInputs(4).NumOutputs(2);
 
-SHOULD_NOT_DO_GRADIENT(GenerateProposals);
-// For backward compatibility
-SHOULD_NOT_DO_GRADIENT(GenerateProposalsCPP);
-
 } // namespace
 } // namespace caffe2

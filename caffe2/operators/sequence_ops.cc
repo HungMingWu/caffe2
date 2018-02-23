@@ -253,50 +253,6 @@ REGISTER_CPU_OPERATOR(RemovePadding, RemovePaddingOp<CPUContext>);
 REGISTER_CPU_OPERATOR(GatherPadding, GatherPaddingOp<CPUContext>);
 REGISTER_CPU_OPERATOR(PadEmptySamples, PadEmptySamplesOp<CPUContext>);
 
-struct GetAddPaddingGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    // whether to provide lengths as input to gradient
-    vector<std::string> g_inputs{GO(0)};
-    if (Def().input_size() > 1) {
-      CAFFE_ENFORCE(Def().output_size() > 1);
-      g_inputs.push_back(O(1));
-    }
-
-    vector<OperatorDef> ops;
-    // gradient on the data
-    ops.push_back(CreateOperatorDef(
-        "RemovePadding", "", g_inputs, vector<string>{GI(0)}));
-    // gradient on the start_padding (and end_padding)
-    if (Def().input_size() >= 3) {
-      std::vector<string> padding_grads{GI(2)};
-      if (Def().input_size() == 4) {
-        padding_grads.push_back(GI(3));
-      }
-      auto g_inputs2 = g_inputs;
-      ops.push_back(
-          CreateOperatorDef("GatherPadding", "", g_inputs2, padding_grads));
-    }
-    return ops;
-  }
-};
-REGISTER_GRADIENT(AddPadding, GetAddPaddingGradient);
-
-struct GetRemovePaddingGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    // whether to provide lengths as input to gradient
-    vector<std::string> g_inputs{GO(0)};
-    if (Def().input_size() > 1) {
-      CAFFE_ENFORCE(Def().output_size() > 1);
-      g_inputs.push_back(O(1));
-    }
-
-    return SingleGradientDef("AddPadding", "", g_inputs, vector<string>{GI(0)});
-  }
-};
-REGISTER_GRADIENT(RemovePadding, GetRemovePaddingGradient);
-
 OPERATOR_SCHEMA(AddPadding)
     .NumInputs(1, 4)
     .NumOutputs(1, 2)

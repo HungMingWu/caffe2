@@ -83,16 +83,4 @@ EluGradient takes both Y and dY and uses this to update dX according to the
 chain rule and derivatives of the rectified linear function.
 )DOC");
 
-class GetEluGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        def_.type() + "Gradient",
-        "",
-        vector<string>{O(0), GO(0)},
-        vector<string>{GI(0)});
-  }
-};
-REGISTER_GRADIENT(Elu, GetEluGradient);
-
 } // namespace caffe2

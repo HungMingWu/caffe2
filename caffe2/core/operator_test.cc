@@ -344,50 +344,6 @@ TEST(NetTest, TestScaffoldingDAGNet) {
   EXPECT_TRUE(net->Run());
 }
 
-class GetFooGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return vector<OperatorDef>{
-        CreateOperatorDef(
-            "FooGradient", "",
-            std::vector<string>{GO(0)},
-            std::vector<string>{GI(0)})};
-  }
-};
-
-REGISTER_GRADIENT(Foo, GetFooGradient);
-
-TEST(OperatorGradientRegistryTest, GradientSimple) {
-  Argument arg = MakeArgument<int>("arg", 1);
-  DeviceOption option;
-  option.set_device_type(CPU);
-  OperatorDef def = CreateOperatorDef(
-      "Foo", "", std::vector<string>{"in"}, std::vector<string>{"out"},
-      std::vector<Argument>{arg}, option, "DUMMY_ENGINE");
-  vector<GradientWrapper> g_output(1);
-  g_output[0].dense_ = "out_grad";
-  GradientOpsMeta meta = GetGradientForOp(def, g_output);
-  // Check the names, input and output.
-  EXPECT_EQ(meta.ops_.size(), 1);
-  const OperatorDef& grad_op = meta.ops_[0];
-  EXPECT_EQ(grad_op.type(), "FooGradient");
-  EXPECT_EQ(grad_op.name(), "");
-  EXPECT_EQ(grad_op.input_size(), 1);
-  EXPECT_EQ(grad_op.output_size(), 1);
-  EXPECT_EQ(grad_op.input(0), "out_grad");
-  EXPECT_EQ(grad_op.output(0), "in_grad");
-  // Checks the engine, device option and arguments.
-  EXPECT_EQ(grad_op.engine(), "DUMMY_ENGINE");
-  EXPECT_EQ(grad_op.device_option().device_type(), CPU);
-  EXPECT_EQ(grad_op.arg_size(), 1);
-  EXPECT_EQ(grad_op.arg(0).SerializeAsString(),
-            MakeArgument<int>("arg", 1).SerializeAsString());
-  // Checks the gradient name for input.
-  EXPECT_EQ(meta.g_input_.size(), 1);
-  EXPECT_TRUE(meta.g_input_[0].IsDense());
-  EXPECT_EQ(meta.g_input_[0].dense_, "in_grad");
-}
-
 TEST(EnginePrefTest, PerOpEnginePref) {
   OperatorDef op_def;
   Workspace ws;

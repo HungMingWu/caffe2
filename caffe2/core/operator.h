@@ -28,7 +28,6 @@
 #include "caffe2/core/common.h"
 #include "caffe2/core/net.h"
 #include "caffe2/core/observer.h"
-#include "caffe2/core/operator_gradient.h"
 #include "caffe2/core/operator_schema.h"
 #include "caffe2/core/registry.h"
 #include "caffe2/core/tensor.h"
@@ -814,14 +813,6 @@ void SetOpEnginePref(
     const CaffeMap<int, EnginePrefType>& op_pref);
 
 TensorShape GetTensorShapeOfBlob(const Blob* b);
-
-TensorShapes InferBlobShapesAndTypesFromWorkspace(
-    Workspace* ws,
-    const vector<std::unique_ptr<NetDef>>& nets);
-
-TensorShapes InferBlobShapesAndTypesFromMap(
-    const CaffeMap<std::string, std::vector<TIndex>>& blob_dimensions,
-    const vector<std::unique_ptr<NetDef>>& nets);
 
 std::map<string, std::pair<DeviceOption, DeviceOption>> ValidateTensorDevices(
     OperatorBase& op,

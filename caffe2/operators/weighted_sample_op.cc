@@ -113,5 +113,4 @@ contains the index(es) of the sampled output.
         "The output tensor contains value(s) selected by the sampled index(es)"
         "It is a 1-D Tensor<float> of size (batch_size x 1)");
 
-SHOULD_NOT_DO_GRADIENT(WeightedSample);
 } // namespace caffe2

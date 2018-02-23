@@ -59,15 +59,4 @@ Calculates the sine of the given input tensor, element-wise.
 
 OPERATOR_SCHEMA(SinGradient).NumInputs(2).NumOutputs(1).IdenticalTypeAndShape();
 
-class GetSinGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "SinGradient",
-        "",
-        std::vector<string>{I(0), GO(0)},
-        std::vector<string>{GI(0)});
-  }
-};
-REGISTER_GRADIENT(Sin, GetSinGradient);
 } // namespace caffe2

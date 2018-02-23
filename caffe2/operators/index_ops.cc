@@ -347,15 +347,6 @@ Returns the number of entries currently present in the index.
     .Input(0, "handle", "Pointer to an Index instance.")
     .Output(0, "items", "Scalar int64 tensor with number of entries.");
 
-NO_GRADIENT(IndexGetOp);
-NO_GRADIENT(IntIndexCreate);
-NO_GRADIENT(LongIndexCreate);
-NO_GRADIENT(StringIndexCreate);
-SHOULD_NOT_DO_GRADIENT(IndexFreeze);
-SHOULD_NOT_DO_GRADIENT(IndexLoad);
-SHOULD_NOT_DO_GRADIENT(IndexStore);
-SHOULD_NOT_DO_GRADIENT(IndexSize);
-
 class IndexSerializer : public BlobSerializerBase {
  public:
   IndexSerializer() {}

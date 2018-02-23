@@ -72,17 +72,6 @@ OPERATOR_SCHEMA(LeakyReluGradient)
     .AllowInplace({{1, 0}})
     .Arg("alpha", "Coefficient of leakage");
 
-class GetLeakyReluGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "LeakyReluGradient",
-        "",
-        vector<string>{O(0), GO(0)},
-        vector<string>{GI(0)});
-  }
-};
 
-REGISTER_GRADIENT(LeakyRelu, GetLeakyReluGradient);
 
 } // namespace caffe2

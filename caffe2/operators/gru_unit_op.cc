@@ -49,23 +49,4 @@ OPERATOR_SCHEMA(GRUUnitGradient)
         "When false, the sequence lengths input is left out, "
         "and all following inputs are shifted left by one.");
 
-class GetGRUUnitGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    if (GetFlagArgument(def_, "sequence_lengths", true)) {
-      return SingleGradientDef(
-          "GRUUnitGradient",
-          "",
-          vector<string>{I(0), I(1), I(2), I(3), O(0), GO(0)},
-          vector<string>{GI(0), GI(1)});
-    } else {
-      return SingleGradientDef(
-          "GRUUnitGradient",
-          "",
-          vector<string>{I(0), I(1), I(2), O(0), GO(0)},
-          vector<string>{GI(0), GI(1)});
-    }
-  }
-};
-REGISTER_GRADIENT(GRUUnit, GetGRUUnitGradient);
 } // namespace caffe2

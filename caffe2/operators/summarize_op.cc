@@ -82,5 +82,4 @@ greater than 0, the values are written to a log file in the root folder.
         "1-D tensor (Tensor<float>) of size 4 containing min, "
         "max, mean and standard deviation");
 
-SHOULD_NOT_DO_GRADIENT(Summarize);
 } // namespace caffe2

@@ -49,16 +49,5 @@ and output blobs.
         "The natural log of the input tensor computed "
         "element-wise");
 
-class GetLogGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "Div",
-        "",
-        std::vector<string>{GO(0), I(0)},
-        std::vector<string>{GI(0)});
-  }
-};
-REGISTER_GRADIENT(Log, GetLogGradient);
 
 } // namespace caffe2

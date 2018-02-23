@@ -354,6 +354,5 @@ the transform of each column `x` of the input `data`:
     .Input(2, "lambda2", "tensor of size D with the same type as data")
     .Output(0, "output", "output matrix that applied box-cox transform");
 
-GRADIENT_NOT_IMPLEMENTED_YET(BatchBoxCox);
 } // namespace
 } // namespace caffe2

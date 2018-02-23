@@ -35,15 +35,4 @@ network to make it a BRNN.
         "a (lengths, segments, embeddings,) tensor with each segment reversed"
         "and paddings unchanged.");
 
-class GetReversePackedSegsGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "ReversePackedSegs",
-        "",
-        vector<string>{GO(0), I(1)},
-        vector<string>{GI(0)});
-  }
-};
-REGISTER_GRADIENT(ReversePackedSegs, GetReversePackedSegsGradient);
 } // namespace caffe2

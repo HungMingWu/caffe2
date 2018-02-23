@@ -85,5 +85,4 @@ SwishGradient takes X, Y and dY and uses this to update dX according to the
 chain rule and derivatives of the swish function.
 )DOC");
 
-REGISTER_GRADIENT(Swish, GetSwishGradient);
 } // namespace caffe2

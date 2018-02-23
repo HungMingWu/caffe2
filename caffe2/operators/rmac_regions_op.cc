@@ -135,6 +135,4 @@ as described in https://arxiv.org/abs/1511.05879.
         "co-ordinates. Each region is repeated N times corresponding to each "
         "item in the batch.");
 
-SHOULD_NOT_DO_GRADIENT(RMACRegions);
-
 } // namespace caffe2

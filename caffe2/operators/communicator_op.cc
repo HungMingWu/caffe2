@@ -191,18 +191,6 @@ Receives the tensor from another node.
         "(bool) if set, only send the content and assume that the receiver "
         "has already known the tensor's shape and information.");
 
-SHOULD_NOT_DO_GRADIENT(CreateCommonWorld);
-SHOULD_NOT_DO_GRADIENT(CloneCommonWorld);
-SHOULD_NOT_DO_GRADIENT(DestroyCommonWorld);
-SHOULD_NOT_DO_GRADIENT(Broadcast);
-SHOULD_NOT_DO_GRADIENT(Reduce);
-SHOULD_NOT_DO_GRADIENT(Allgather);
-SHOULD_NOT_DO_GRADIENT(Allreduce);
-SHOULD_NOT_DO_GRADIENT(ReduceScatter);
-SHOULD_NOT_DO_GRADIENT(Barrier);
-SHOULD_NOT_DO_GRADIENT(SendTensor);
-SHOULD_NOT_DO_GRADIENT(ReceiveTensor);
-
 // Communication operators do not have default engines.
 REGISTER_CPU_OPERATOR(CreateCommonWorld, NoDefaultEngineOp<CPUContext>);
 REGISTER_CPU_OPERATOR(CloneCommonWorld, NoDefaultEngineOp<CPUContext>);

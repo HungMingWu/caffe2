@@ -53,22 +53,4 @@ OPERATOR_SCHEMA(Float16ConstantFill)
         "output",
         "Output tensor of constant values specified by 'value'");
 
-class GetFloatToHalfGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "HalfToFloat", "", vector<string>{GO(0)}, vector<string>{GI(0)});
-  }
-};
-REGISTER_GRADIENT(FloatToHalf, GetFloatToHalfGradient);
-
-class GetHalfToFloatGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    return SingleGradientDef(
-        "FloatToHalf", "", vector<string>{GO(0)}, vector<string>{GI(0)});
-  }
-};
-REGISTER_GRADIENT(HalfToFloat, GetHalfToFloatGradient);
-NO_GRADIENT(Float16ConstantFill);
 } // namespace caffe2

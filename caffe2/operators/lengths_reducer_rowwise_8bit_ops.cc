@@ -222,10 +222,4 @@ output tensor of size (m_1, m_2, ..., m_n).
         "s_i, b_i -- scale and bias for i-th row")
     .Output(1, "output", "output");
 
-NO_GRADIENT(Rowwise8BitQuantizedToFloat);
-NO_GRADIENT(FloatToRowwiseQuantized8Bits);
-NO_GRADIENT(SparseLengthsSum8BitsRowwise);
-NO_GRADIENT(SparseLengthsWeightedSum8BitsRowwise);
-NO_GRADIENT(SparseLengthsMean8BitsRowwise);
-NO_GRADIENT(SparseLengthsWeightedMean8BitsRowwise);
 }

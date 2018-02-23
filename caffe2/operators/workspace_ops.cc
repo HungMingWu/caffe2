@@ -53,6 +53,5 @@ of each blob in the active workspace.
         "(bool, default true) Whether to include blobs "
         "inherited from parent workspaces.")
     .Output(0, "blob_names", "1D tensor of strings containing blob names.");
-SHOULD_NOT_DO_GRADIENT(GetAllBlobNamesOp);
 }
 }

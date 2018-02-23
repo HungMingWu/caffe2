@@ -35,6 +35,5 @@ unique but with the range [0, blocks_size). Indices could be empty.
         "shrunk data",
         "data after removing data blocks indexed by 'indices'");
 
-SHOULD_NOT_DO_GRADIENT(RemoveDataBlocks);
 } // namespace
 } // namespace caffe2

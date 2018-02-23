@@ -140,7 +140,6 @@ per class for the average precision of that class.
         "1-D tensor (Tensor<float>) of size num_classes containing "
         "average precision for each class");
 
-SHOULD_NOT_DO_GRADIENT(APMeter);
 
 } // namespace
 } // namespace caffe2

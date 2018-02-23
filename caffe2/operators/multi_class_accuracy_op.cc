@@ -98,5 +98,4 @@ and predicted scores of each class for each instance.
     "amounts",
     "1-D int tensor (D,) of number of instances for each class in the batch.");
 
-SHOULD_NOT_DO_GRADIENT(MultiClassAccuracy);
 }  // namespace caffe2

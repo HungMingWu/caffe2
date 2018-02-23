@@ -254,8 +254,4 @@ that has the elements in each sequence set to 1.0, and 0.0 everywhere else.
     .Input(2, "index_size_tensor", "Size of the index")
     .Output(0, "one_hots", "Matrix of size len(lengths) x index_size");
 
-NO_GRADIENT(BatchOneHot);
-NO_GRADIENT(OneHot);
-NO_GRADIENT(SegmentOneHot);
-NO_GRADIENT(BucketBatchOneHot);
 } // namespace caffe2

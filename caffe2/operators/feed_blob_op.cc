@@ -18,7 +18,6 @@
 
 namespace caffe2 {
 REGISTER_CPU_OPERATOR(FeedBlob, FeedBlobOp<CPUContext>);
-SHOULD_NOT_DO_GRADIENT(FeedBlob);
 
 OPERATOR_SCHEMA(FeedBlob)
     .NumInputs(0, 0)

@@ -52,5 +52,4 @@ single (float) perplexity value for the batch.
 .Output(0, "output", "The output- a single (float) perplexity value for the "
         "batch");
 
-SHOULD_NOT_DO_GRADIENT(Perplexity);
 }  // namespace caffe2

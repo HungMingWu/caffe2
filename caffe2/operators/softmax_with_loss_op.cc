@@ -285,23 +285,4 @@ bool SoftmaxWithLossGradientOp<float, CPUContext>::RunOnDevice() {
   return true;
 }
 
-namespace {
-class GetSoftmaxWithLossGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-    vector<string> blob_names{
-        {I(0), I(1), O(0), GO(1)},
-    };
-
-    // Add weight blob, if given
-    if (def_.input_size() == 3) {
-      blob_names.emplace(blob_names.begin() + 2, I(2));
-    }
-    return SingleGradientDef(
-        "SoftmaxWithLossGradient", "", blob_names, vector<string>{GI(0)});
-  }
-};
-
-REGISTER_GRADIENT(SoftmaxWithLoss, GetSoftmaxWithLossGradient);
-}
 } // namespace caffe2

@@ -77,29 +77,5 @@ will be (2, 1, 3).
     .Input(0, "data", "An input tensor.")
     .Output(0, "transposed", "Transposed output.");
 
-class GetTransposeGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  // We will create our own arguments.
-  bool CopyArguments() const override {
-    return false;
-  }
-  vector<OperatorDef> GetGradientDefs() override {
-    auto ops = SingleGradientDef(
-        "Transpose", "", vector<string>{GO(0)}, vector<string>{GI(0)});
-    ops[0].mutable_arg()->CopyFrom(Def().arg());
-    if (ArgumentHelper::HasArgument(Def(), "axes")) {
-      // If axes is specified, we will need to figure out the inverse index.
-      const Argument& old_axes = GetArgument(Def(), "axes");
-      const int axes_size = old_axes.ints_size();
-      Argument* new_arg = GetMutableArgument("axes", false, &ops[0]);
-      for (int i = 0; i < axes_size; ++i) {
-        new_arg->set_ints(old_axes.ints(i), i);
-      }
-    }
-    return ops;
-  }
-};
-
-REGISTER_GRADIENT(Transpose, GetTransposeGradient);
 
 } // namespace caffe2

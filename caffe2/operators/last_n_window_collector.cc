@@ -198,6 +198,5 @@ This is not thread safe unless a mutex is given.
     .Output(0, "last-N buffer", "Data stored in sessions")
     .Output(1, "next cursor", "Updated input cursor")
     .Output(2, "NUM_VISITED", "number of records seen so far");
-SHOULD_NOT_DO_GRADIENT(LastNWindowCollector);
 } // namespace
 } // namespace caffe2
