@@ -23,7 +23,6 @@
 #include "caffe2/core/blob_serialization.h"
 #include "caffe2/core/common.h"
 #include "caffe2/core/context.h"
-#include "caffe2/core/db.h"
 #include "caffe2/core/operator.h"
 #include "caffe2/core/qtensor.h"
 #include "caffe2/core/qtensor_serialization.h"
@@ -39,7 +38,6 @@ CAFFE2_DECLARE_int(caffe2_tensor_chunk_size);
 CAFFE2_DECLARE_bool(caffe2_serialize_fp16_as_bytes);
 
 namespace caffe2 {
-using namespace ::caffe2::db;
 namespace {
 class BlobTestFoo {
  public:
@@ -753,69 +751,6 @@ TEST(QTensorTest, QTensorSerialization) {
 
 using StringMap = std::vector<std::pair<string, string>>;
 
-class VectorCursor : public db::Cursor {
- public:
-  explicit VectorCursor(StringMap* data) : data_(data) {
-    pos_ = 0;
-  }
-  ~VectorCursor() {}
-  void Seek(const string& /* unused */) override {}
-  void SeekToFirst() override {}
-  void Next() override {
-    ++pos_;
-  }
-  string key() override {
-    return (*data_)[pos_].first;
-  }
-  string value() override {
-    return (*data_)[pos_].second;
-  }
-  bool Valid() override {
-    return pos_ < data_->size();
-  }
-
- private:
-  StringMap* data_ = nullptr;
-  size_t pos_ = 0;
-};
-
-class VectorDB : public db::DB {
- public:
-  VectorDB(const string& source, db::Mode mode)
-      : DB(source, mode), name_(source) {}
-  ~VectorDB() {
-    data_.erase(name_);
-  }
-  void Close() override {}
-  std::unique_ptr<db::Cursor> NewCursor() override {
-    return make_unique<VectorCursor>(getData());
-  }
-  std::unique_ptr<db::Transaction> NewTransaction() override {
-    CAFFE_THROW("Not implemented");
-  }
-  static void registerData(const string& name, StringMap&& data) {
-    std::lock_guard<std::mutex> guard(dataRegistryMutex_);
-    data_[name] = std::move(data);
-  }
-
- private:
-  StringMap* getData() {
-    auto it = data_.find(name_);
-    CAFFE_ENFORCE(it != data_.end(), "Can't find ", name_);
-    return &(it->second);
-  }
-
- private:
-  string name_;
-  static std::mutex dataRegistryMutex_;
-  static std::map<string, StringMap> data_;
-};
-
-std::mutex VectorDB::dataRegistryMutex_;
-std::map<string, StringMap> VectorDB::data_;
-
-REGISTER_CAFFE2_DB(vector_db, VectorDB);
-
 template <typename TypeParam>
 class TypedTensorTest : public ::testing::Test {};
 typedef ::testing::
@@ -831,30 +766,6 @@ TYPED_TEST(TypedTensorTest, BigTensorSerialization) {
   int64_t size = d1 * d2;
   string db_source = (string)std::tmpnam(nullptr);
   VLOG(1) << "db_source: " << db_source;
-
-  {
-    VLOG(1) << "Test begin";
-    Blob blob;
-    TensorCPU* tensor = blob.GetMutable<TensorCPU>();
-    VLOG(1) << "Allocating blob";
-    tensor->Resize(d1, d2);
-    auto mutableData = tensor->mutable_data<TypeParam>();
-    VLOG(1) << "Filling out the blob";
-    for (int64_t i = 0; i < size; ++i) {
-      mutableData[i] = static_cast<TypeParam>(i);
-    }
-    StringMap data;
-    std::mutex mutex;
-    /*auto db = CreateDB("minidb", db_source, WRITE);*/
-    auto acceptor = [&](const std::string& key, const std::string& value) {
-      std::lock_guard<std::mutex> guard(mutex);
-      /*db->NewTransaction()->Put(key, value);*/
-      data.emplace_back(key, value);
-    };
-    blob.Serialize("test", acceptor);
-    VectorDB::registerData(db_source, std::move(data));
-    VLOG(1) << "finished writing to DB";
-  }
 
   {
     DeviceOption option;
@@ -950,24 +861,6 @@ CAFFE_REGISTER_TYPED_CLASS(
 TEST(ContentChunks, Serialization) {
   string db_source = (string)std::tmpnam(nullptr);
   VLOG(1) << "db_source: " << db_source;
-
-  {
-    VLOG(1) << "Test begin";
-    Blob blob;
-    DummyType* container = blob.GetMutable<DummyType>();
-    VLOG(1) << "Allocating blob";
-    container->n_chunks = 10;
-    VLOG(1) << "Filling out the blob";
-    StringMap data;
-    std::mutex mutex;
-    auto acceptor = [&](const std::string& key, const std::string& value) {
-      std::lock_guard<std::mutex> guard(mutex);
-      data.emplace_back(key, value);
-    };
-    blob.Serialize("test", acceptor);
-    VectorDB::registerData(db_source, std::move(data));
-    VLOG(1) << "finished writing to DB";
-  }
 
   {
     DeviceOption option;
