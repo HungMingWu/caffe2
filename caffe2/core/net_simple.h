@@ -39,11 +39,6 @@ class SimpleNet : public NetBase {
     return false;
   }
 
-  vector<float> TEST_Benchmark(
-      const int warmup_runs,
-      const int main_runs,
-      const bool run_individual) override;
-
   /*
    * This returns a list of pointers to objects stored in unique_ptrs.
    * Used by Observers.

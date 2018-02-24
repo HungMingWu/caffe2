@@ -270,43 +270,6 @@ void DAGNetBase::WorkerFunction() {
   }
 }
 
-vector<float> DAGNetBase::TEST_Benchmark(
-    const int warmup_runs,
-    const int main_runs,
-    const bool run_individual) {
-  LOG(INFO) << "Starting benchmark.";
-  LOG(INFO) << "Running warmup runs.";
-  CAFFE_ENFORCE(
-      warmup_runs >= 0,
-      "Number of warm up runs should be non negative, provided ",
-      warmup_runs,
-      ".");
-  for (int i = 0; i < warmup_runs; ++i) {
-    CAFFE_ENFORCE(Run(), "Warmup run ", i, " has failed.");
-  }
-
-  LOG(INFO) << "Main runs.";
-  CAFFE_ENFORCE(
-      main_runs >= 0,
-      "Number of main runs should be non negative, provided ",
-      main_runs,
-      ".");
-  Timer timer;
-  for (int i = 0; i < main_runs; ++i) {
-    CAFFE_ENFORCE(Run(), "Main run ", i, " has failed.");
-  }
-  auto millis = timer.MilliSeconds();
-  LOG(INFO) << "Main run finished. Milliseconds per iter: "
-            << millis / main_runs
-            << ". Iters per second: " << 1000.0 * main_runs / millis;
-
-  if (run_individual) {
-    LOG(INFO) << "DAGNet does not do per-op benchmark. To do so, "
-                 "switch to a simple net type.";
-  }
-  return vector<float>{millis / main_runs};
-}
-
 bool DAGNet::RunAt(int chain_id, const std::vector<int>& chain) {
   for (const auto i : chain) {
 #ifdef CAFFE2_ENABLE_SDT
