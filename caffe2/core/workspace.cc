@@ -320,12 +320,5 @@ bool Workspace::RunPlan(const PlanDef& plan, ShouldContinue shouldContinue) {
   return RunPlanOnWorkspace(this, plan, shouldContinue);
 }
 
-ThreadPool* Workspace::GetThreadPool() {
-  std::lock_guard<std::mutex> guard(thread_pool_creation_mutex_);
-  if (!thread_pool_) {
-    thread_pool_ = ThreadPool::defaultThreadPool();
-  }
-  return thread_pool_.get();
-}
 
 } // namespace caffe2

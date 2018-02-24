@@ -15,7 +15,7 @@ CAFFE2_DEFINE_string(
     backend,
     "builtin",
     "The backend to use when running the model. The allowed "
-    "backend choices are: builtin, default, nnpack, eigen, mkl");
+    "backend choices are: builtin, default, eigen, mkl");
 CAFFE2_DEFINE_string(
     init_net,
     "",
@@ -173,8 +173,7 @@ int main(int argc, char** argv) {
   caffe2::NetDef net_def;
   CAFFE_ENFORCE(ReadProtoFromFile(caffe2::FLAGS_net, &net_def));
   if (caffe2::FLAGS_backend != "builtin") {
-    std::string engine = caffe2::FLAGS_backend == "nnpack" ? "NNPACK" :
-                         caffe2::FLAGS_backend == "eigen" ? "EIGEN" :
+    std::string engine = caffe2::FLAGS_backend == "eigen" ? "EIGEN" :
                          caffe2::FLAGS_backend == "mkl" ? "MKLDNN" :
                          caffe2::FLAGS_backend == "default" ? "" : "NONE";
      CAFFE_ENFORCE(engine != "NONE", "Backend is not supported");

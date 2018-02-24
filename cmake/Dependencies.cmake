@@ -55,27 +55,6 @@ else()
   message(FATAL_ERROR "Unrecognized blas option:" ${BLAS})
 endif()
 
-# ---[ NNPACK
-if(USE_NNPACK)
-  include("cmake/External/nnpack.cmake")
-  if(NNPACK_FOUND)
-    if(TARGET nnpack)
-      # ---[ NNPACK is being built together with Caffe2: explicitly specify dependency
-      list(APPEND Caffe2_DEPENDENCY_LIBS nnpack)
-    else()
-      include_directories(${NNPACK_INCLUDE_DIRS})
-      list(APPEND Caffe2_DEPENDENCY_LIBS ${NNPACK_LIBRARIES})
-    endif()
-  else()
-    message(WARNING "Not compiling with NNPACK. Suppress this warning with -DUSE_NNPACK=OFF")
-    set(USE_NNPACK OFF)
-  endif()
-endif()
-
-if(USE_OBSERVERS)
-  list(APPEND Caffe2_DEPENDENCY_LIBS Caffe2_CPU_OBSERVER)
-endif()
-
 # ---[ On Android, Caffe2 uses cpufeatures library in the thread pool
 if (ANDROID)
   if (NOT TARGET cpufeatures)

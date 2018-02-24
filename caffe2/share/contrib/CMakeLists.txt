@@ -1,8 +1,5 @@
 set(Caffe2_CPU_OBSERVER_SRCS)
 
-if (USE_NNPACK)
-  add_subdirectory(nnpack)
-endif()
 if (BUILD_OBSERVERS)
 add_subdirectory(observers)
 endif()
