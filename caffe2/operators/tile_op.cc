@@ -19,7 +19,6 @@
 namespace caffe2 {
 
 REGISTER_CPU_OPERATOR(Tile, TileOp<CPUContext>);
-REGISTER_CPU_OPERATOR(TileGradient, TileGradientOp<float, CPUContext>);
 
 OPERATOR_SCHEMA(Tile)
     .NumInputs(1, 3)
@@ -63,8 +62,5 @@ For example, tiling [[a b c d]] by tile=2, axis=0 produces
         0,
         "tiled_data",
         "Tensor that will contain input replicated along the given axis.");
-
-OPERATOR_SCHEMA(TileGradient).NumInputs(1, 3).NumOutputs(1);
-
 
 } // namespace caffe2

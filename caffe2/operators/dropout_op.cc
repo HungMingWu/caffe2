@@ -48,33 +48,7 @@ bool DropoutOp<float, CPUContext>::RunOnDevice() {
   }
 }
 
-template <>
-bool DropoutGradientOp<float, CPUContext>::RunOnDevice() {
-  auto& dY = Input(0);
-  auto* dX = Output(0);
-  dX->Resize(dY.dims());
-  if (is_test_) {
-    if (dX != &dY) {
-      context_.Copy<float, CPUContext, CPUContext>(
-          dY.size(), dY.data<float>(), dX->mutable_data<float>());
-    }
-    return true;
-  } else {
-    auto& mask = Input(1);
-    CAFFE_ENFORCE_EQ(dY.size(), mask.size());
-    const float* dYdata = dY.data<float>();
-    const bool* mask_data = mask.data<bool>();
-    float* dXdata = dX->mutable_data<float>();
-    float scale = 1. / (1. - ratio_);
-    for (int i = 0; i < dY.size(); ++i) {
-      dXdata[i] = dYdata[i] * mask_data[i] * scale;
-    }
-    return true;
-  }
-}
-
 REGISTER_CPU_OPERATOR(Dropout, DropoutOp<float, CPUContext>);
-REGISTER_CPU_OPERATOR(DropoutGrad, DropoutGradientOp<float, CPUContext>);
 
 OPERATOR_SCHEMA(Dropout)
     .NumInputs(1)
@@ -110,10 +84,5 @@ the training phase, so during testing nothing needs to be done.
         1,
         "mask",
         "The output mask. If is_test is nonzero, this output is not filled.");
-
-OPERATOR_SCHEMA(DropoutGrad)
-    .NumInputs(1, 2)
-    .NumOutputs(1)
-    .AllowInplace({{0, 0}});
 
 } // namespace caffe2

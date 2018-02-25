@@ -30,25 +30,7 @@ bool ClipOp<float, CPUContext>::RunOnDevice() {
   return true;
 }
 
-template <>
-bool ClipGradientOp<float, CPUContext>::RunOnDevice() {
-  auto& Y = Input(0);
-  auto& dY = Input(1);
-  auto* dX = Output(0);
-  CAFFE_ENFORCE_GT(Y.size(), 0);
-  CAFFE_ENFORCE_EQ(dY.size(), Y.size());
-  dX->ResizeLike(Y);
-  const float* Ydata = Y.data<float>();
-  const float* dYdata = dY.data<float>();
-  float* dXdata = dX->mutable_data<float>();
-  for (int i = 0; i < Y.size(); ++i) {
-    dXdata[i] = dYdata[i] * (Ydata[i] > min_ && Ydata[i] < max_);
-  }
-  return true;
-}
-
 REGISTER_CPU_OPERATOR(Clip, ClipOp<float, CPUContext>);
-REGISTER_CPU_OPERATOR(ClipGradient, ClipGradientOp<float, CPUContext>);
 
 OPERATOR_SCHEMA(Clip)
     .NumInputs(1)
@@ -74,7 +56,5 @@ are the same.
         "output",
         "Output tensor (Tensor<float>) containing clipped"
         "input elements");
-
-OPERATOR_SCHEMA(ClipGradient).NumInputs(2).NumOutputs(1).AllowInplace({{1, 0}});
 
 }  // namespace caffe2

@@ -43,30 +43,6 @@ bool ReluOp<float, CPUContext>::RunOnDevice() {
   return true;
 }
 
-template <>
-bool ReluGradientOp<float, CPUContext>::RunOnDevice() {
-  auto& Y = Input(0);
-  auto& dY = Input(1);
-  auto* dX = Output(0);
-  CAFFE_ENFORCE_EQ(dY.size(), Y.size());
-  dX->ResizeLike(Y);
-
-  const float* Ydata = Y.data<float>();
-  const float* dYdata = dY.data<float>();
-  float* dXdata = dX->mutable_data<float>();
-  // TODO: proper vectorization with Eigen
-  EigenVectorArrayMap<float> dXvec(dXdata, dX->size());
-  ConstEigenVectorArrayMap<float> Yvec(Ydata, Y.size());
-  ConstEigenVectorArrayMap<float> dYvec(dYdata, dY.size());
-  dXvec = dYvec * Yvec.cwiseSign();
-  /* Previous implementation
-  for (int i = 0; i < Y.size(); ++i) {
-    dXdata[i] = Ydata[i] > 0 ? dYdata[i] : 0;
-  }
-  */
-  return true;
-}
-
 namespace {
 OpSchema::Cost CostInferenceForRelu(
     const OperatorDef& def,
@@ -81,7 +57,6 @@ OpSchema::Cost CostInferenceForRelu(
 } // namespace
 
 REGISTER_CPU_OPERATOR(Relu, ReluOp<float, CPUContext>);
-REGISTER_CPU_OPERATOR(ReluGradient, ReluGradientOp<float, CPUContext>);
 
 // Input: X, output: Y
 OPERATOR_SCHEMA(Relu)
@@ -97,16 +72,5 @@ the tensor elementwise.
 )DOC")
     .Input(0, "X", "1D input tensor")
     .Output(0, "Y", "1D input tensor");
-
-// Input: Y, dY, output: dX
-OPERATOR_SCHEMA(ReluGradient)
-    .NumInputs(2)
-    .NumOutputs(1)
-    .AllowInplace({{1, 0}})
-    .SetDoc(R"DOC(
-ReluGradient takes both Y and dY and uses this to update dX according to the
-chain rule and derivatives of the rectified linear function.
-)DOC");
-
 
 }  // namespace caffe2

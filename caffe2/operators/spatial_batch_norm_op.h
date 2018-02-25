@@ -58,43 +58,6 @@ class SpatialBNOp : public Operator<Context> {
   OUTPUT_TAGS(OUTPUT, RUNNING_MEAN, RUNNING_VAR, SAVED_MEAN, SAVED_INV_VAR);
 };
 
-template <class Context>
-class SpatialBNGradientOp : public Operator<Context> {
- public:
-  USE_OPERATOR_CONTEXT_FUNCTIONS;
-  SpatialBNGradientOp(const OperatorDef& operator_def, Workspace* ws)
-      : Operator<Context>(operator_def, ws),
-        is_test_(OperatorBase::GetSingleArgument<int>(OpSchema::Arg_IsTest, 0)),
-        epsilon_(OperatorBase::GetSingleArgument<float>("epsilon", 1e-5f)),
-        order_(StringToStorageOrder(
-            OperatorBase::GetSingleArgument<string>("order", "NCHW"))),
-        num_batches_(OperatorBase::GetSingleArgument<int>("num_batches", 1)) {
-    CAFFE_ENFORCE(InputSize() == 5 || InputSize() == 7);
-    CAFFE_ENFORCE(OutputSize() == 3);
-  }
-  ~SpatialBNGradientOp() {}
-
-  bool RunOnDevice() override {
-    return true;
-  }
-
- protected:
-  bool is_test_;
-  double epsilon_;
-  StorageOrder order_;
-  int num_batches_;
-
-  INPUT_TAGS(
-      INPUT,
-      SCALE,
-      OUTPUT_GRAD,
-      SAVED_MEAN,
-      SAVED_INV_VAR,
-      AGGREGATE_SCALE_GRAD,
-      AGGREGATE_BIAS_GRAD);
-  OUTPUT_TAGS(INPUT_GRAD, SCALE_GRAD, BIAS_GRAD);
-};
-
 } // namespace caffe2
 
 #endif // CAFFE2_OPERATORS_SPATIAL_BATCH_NORM_OP_H_

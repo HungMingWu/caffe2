@@ -31,26 +31,6 @@ class SeluOp final : public Operator<Context> {
   T lambda_;
 };
 
-template <typename T, class Context>
-class SeluGradientOp final : public Operator<Context> {
- public:
-  USE_OPERATOR_CONTEXT_FUNCTIONS;
-  SeluGradientOp(const OperatorDef& operator_def, Workspace* ws)
-      : Operator<Context>(operator_def, ws) {
-    alpha_ = OperatorBase::GetSingleArgument<T>(
-        "alpha", 1.6732632423543772848170429916717f);
-    lambda_ = OperatorBase::GetSingleArgument<T>(
-        "scale", 1.0507009873554804934193349852946f);
-    CAFFE_ENFORCE_GT(lambda_, 1.0);
-  }
-
-  bool RunOnDevice() override;
-
- protected:
-  T alpha_;
-  T lambda_;
-};
-
 } // namespace caffe2
 
 #endif // CAFFE2_OPERATORS_SELU_OP_H_

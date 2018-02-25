@@ -39,17 +39,6 @@ class TopKOp : public Operator<Context> {
   int k_;
 };
 
-template <typename T, class Context>
-class TopKGradientOp : public Operator<Context> {
- public:
-  USE_OPERATOR_CONTEXT_FUNCTIONS;
-
-  TopKGradientOp(const OperatorDef& operator_def, Workspace* ws)
-      : Operator<Context>(operator_def, ws) {}
-
-  bool RunOnDevice() override;
-};
-
 } // namespace caffe2
 
 #endif // CAFFE2_OPERATORS_TOP_K_H_

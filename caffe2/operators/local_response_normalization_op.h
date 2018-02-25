@@ -86,23 +86,6 @@ class LRNOp final : public LRNOpBase<T, Context> {
   Tensor<Context> local_scale_tensor_;
 };
 
-template <typename T, class Context>
-class LRNGradientOp final : public LRNOpBase<T, Context> {
- public:
-  USE_OPERATOR_CONTEXT_FUNCTIONS;
-  LRNGradientOp(const OperatorDef& operator_def, Workspace* ws)
-      : LRNOpBase<T, Context>(operator_def, ws) {}
-
-  bool RunOnDeviceWithOrderNCHW() override;
-  bool RunOnDeviceWithOrderNHWC() override;
-
- protected:
-  // Input: X, Y, scale, dY; Output: dX
-  INPUT_TAGS(INPUT, OUTPUT, SCALE, OUTPUT_GRAD);
-  Tensor<Context>* scale_ = nullptr;
-  Tensor<Context> local_scale_tensor_;
-};
-
 } // namespace caffe2
 
 #endif // CAFFE2_OPERATORS_LOCAL_RESPONSE_NORMALIZATION_OP_H_

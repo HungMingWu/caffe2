@@ -73,23 +73,6 @@ class MaxOp : public MaxMinOpBase<T, Context> {
 };
 
 template <typename T, class Context>
-class SelectGradientOpBase : public Operator<Context> {
- public:
-  USE_OPERATOR_CONTEXT_FUNCTIONS;
-  USE_SIMPLE_CTOR_DTOR(SelectGradientOpBase)
-
-  bool RunOnDevice() override;
-};
-
-template <typename T, class Context>
-class MaxGradientOp : public SelectGradientOpBase<T, Context> {
- public:
-  MaxGradientOp(const OperatorDef& operator_def, Workspace* ws)
-      : SelectGradientOpBase<T, Context>(operator_def, ws) {}
-  virtual ~MaxGradientOp() noexcept {}
-};
-
-template <typename T, class Context>
 class MinOp : public MaxMinOpBase<T, Context> {
  public:
   USE_OPERATOR_CONTEXT_FUNCTIONS;
@@ -97,14 +80,6 @@ class MinOp : public MaxMinOpBase<T, Context> {
       : MaxMinOpBase<T, Context>(operator_def, ws) {}
   virtual ~MinOp() noexcept {}
   bool Compute() override;
-};
-
-template <typename T, class Context>
-class MinGradientOp : public SelectGradientOpBase<T, Context> {
- public:
-  MinGradientOp(const OperatorDef& operator_def, Workspace* ws)
-      : SelectGradientOpBase<T, Context>(operator_def, ws) {}
-  virtual ~MinGradientOp() noexcept {}
 };
 
 } // namespace caffe2

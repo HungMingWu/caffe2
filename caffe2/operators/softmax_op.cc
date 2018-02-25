@@ -55,44 +55,7 @@ bool SoftmaxOp<float, CPUContext>::RunOnDevice() {
   return true;
 }
 
-// Implementation for the CPU context.
-template <>
-bool SoftmaxGradientOp<float, CPUContext>::RunOnDevice() {
-  auto& Y = Input(0);
-  auto& dY = Input(1);
-  auto* dX = Output(0);
-  const auto canonical_axis = Y.canonical_axis_index(axis_);
-  const int N = Y.size_to_dim(canonical_axis);
-  const int D = Y.size_from_dim(canonical_axis);
-  // First, get scales
-  if (scale_.size() != N) {
-    scale_.Resize(N);
-  }
-  if (sum_multiplier_.size() != D) {
-    sum_multiplier_.Resize(D);
-    math::Set<float, CPUContext>(D, 1.f, sum_multiplier_.mutable_data<float>(),
-                                 &context_);
-  }
-  dX->ResizeLike(Y);
-  const float* Ydata = Y.data<float>();
-  const float* dYdata = dY.data<float>();
-  float* dXdata = dX->mutable_data<float>();
-  context_.Copy<float, CPUContext, CPUContext>(Y.size(), dYdata, dXdata);
-  float* scaledata = scale_.mutable_data<float>();
-  for (int i = 0; i < N; ++i) {
-    math::Dot<float, CPUContext>(D, Ydata + i * D, dYdata + i * D,
-                                 scaledata + i, &context_);
-  }
-  math::Gemm<float, CPUContext>(CblasNoTrans, CblasNoTrans, N, D, 1, -1,
-                                scaledata, sum_multiplier_.data<float>(), 1,
-                                dXdata, &context_);
-  math::Mul<float, CPUContext>(Y.size(), dXdata, Ydata, dXdata,
-                               &context_);
-  return true;
-}
-
 REGISTER_CPU_OPERATOR(Softmax, SoftmaxOp<float, CPUContext>);
-REGISTER_CPU_OPERATOR(SoftmaxGradient, SoftmaxGradientOp<float, CPUContext>);
 
 OPERATOR_SCHEMA(Softmax)
   .NumInputs(1)
@@ -125,8 +88,6 @@ will throw errors.
   .Output(0, "output", "The softmax normalized output values with the same "
           "shape as input tensor.");
 
-// Input: Y, dY. Output: dX
-OPERATOR_SCHEMA(SoftmaxGradient).NumInputs(2).NumOutputs(1);
 
 
 }  // namespace caffe2

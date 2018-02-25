@@ -21,20 +21,6 @@
 namespace caffe2 {
 
 REGISTER_CPU_OPERATOR(FC, FullyConnectedOp<CPUContext>);
-REGISTER_CPU_OPERATOR(FCGradient, FullyConnectedGradientOp<CPUContext>);
-
-REGISTER_CPU_OPERATOR(
-    FCTransposed,
-    FullyConnectedOp<
-        CPUContext,
-        DefaultEngine,
-        false /* don't transpose weight */>);
-REGISTER_CPU_OPERATOR(
-    FCTransposedGradient,
-    FullyConnectedGradientOp<
-        CPUContext,
-        DefaultEngine,
-        false /* don't transpose weight */>);
 
 namespace {
 std::vector<TensorShape> FCShapeInference(
@@ -84,14 +70,6 @@ OpSchema::Cost CostInferenceForFC(
 } // namespace
 
 using namespace std::placeholders;
-OPERATOR_SCHEMA(FCTransposed)
-    .NumInputs(3)
-    .NumOutputs(1)
-    .TensorInferenceFunction(std::bind(FCShapeInference, _1, _2, true))
-    .SetDoc(R"DOC(
-Same as FC, but weight matrix is supposed to be already pretransposed.
-FCTransposed stands for calling blass with no noTrans, noTrans
-)DOC");
 
 OPERATOR_SCHEMA(FC)
     .NumInputs(3)
@@ -144,7 +122,5 @@ will throw errors.
     .Input(2, "b", "1D blob containing bias vector")
     .Output(0, "Y", "2D output tensor");
 
-OPERATOR_SCHEMA(FCGradient).NumInputs(3).NumOutputs(2, 3);
-OPERATOR_SCHEMA(FCTransposedGradient).NumInputs(3).NumOutputs(2, 3);
 
 } // namespace caffe2

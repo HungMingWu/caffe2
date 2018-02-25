@@ -32,7 +32,6 @@ namespace caffe2 {
 /**
  * RecurrentNetworkExecutor is a specialized runtime for recurrent
  * neural networks (RNNs). It is invoked from the RecurrentNetworkOp
- * and RecurrentNetworkGradientOp.
  *
  * Its main benefit over running each RNN timestep as a separate net
  * is that it can run ops in subsequent timesteps in parallel when possible.

@@ -147,32 +147,4 @@ void SRLHelper::RunWithBroadcast2(
   }
 }
 
-template <>
-template <typename T>
-bool SumReduceLikeOp<CPUContext>::DoRunWithType() {
-  const auto& A = Input(0);
-  const auto& B = Input(1);
-  auto* C = Output(0);
-  CAFFE_ENFORCE(&B != C, "In-place is not allowed.");
-  C->ResizeLike(B);
-  const T* Adata = A.template data<T>();
-  auto* Cdata = C->template mutable_data<T>();
-  if (B.size() == 1) {
-    auto count = A.size();
-    SRLHelper::sum2one<T>(Adata, Cdata, count);
-  } else {
-    size_t pre, n, post;
-    std::tie(pre, n, post) = calculate_broadcast_sizes(A, B, axis_);
-    if (post == 1) {
-      SRLHelper::RunWithBroadcastFront<T>(Adata, Cdata, pre, n, &context_);
-    } else if (pre == 1) {
-      SRLHelper::RunWithBroadcastBack<T>(Adata, Cdata, post, n, &context_);
-    } else {
-      SRLHelper::RunWithBroadcast2<T>(Adata, Cdata, pre, n, post, &context_);
-    }
-  }
-  return true;
-}
-REGISTER_CPU_OPERATOR(SumReduceLike, SumReduceLikeOp<CPUContext>);
-
 }  // namespace caffe2

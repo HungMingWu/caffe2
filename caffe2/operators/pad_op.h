@@ -74,35 +74,6 @@ class PadImageOp final : public ConvPoolOpBase<Context> {
   // Output: Y
 };
 
-template <typename T, class Context>
-class PadImageGradientOp final : public ConvPoolOpBase<Context> {
- public:
-  USE_CONV_POOL_BASE_FUNCTIONS(Context);
-  PadImageGradientOp(const OperatorDef& operator_def, Workspace* ws)
-      : ConvPoolOpBase<Context>(operator_def, ws),
-        mode_(StringToPadMode(
-            OperatorBase::GetSingleArgument<string>("mode", "constant"))) {
-    CAFFE_ENFORCE(
-        legacy_pad_ == LegacyPadding::NOTSET,
-        "Padding layer only supports explicit pad values.");
-    CAFFE_ENFORCE(
-        dilation_h() == 1 && dilation_w() == 1,
-        "Pooling op does not support dilation right now.");
-    // Pad op does not use kernel sizes, so we set it to 1 for computing the
-    // output size.
-    kernel_.assign(pads_.size() / 2, 1);
-  }
-  ~PadImageGradientOp() {}
-
-  bool RunOnDeviceWithOrderNCHW() override;
-  bool RunOnDeviceWithOrderNHWC() override;
-
- private:
-  PadMode mode_;
-  // Input: dY
-  // Output: dX
-};
-
 } // namespace caffe2
 
 #endif // CAFFE2_OPERATORS_PAD_OP_H_

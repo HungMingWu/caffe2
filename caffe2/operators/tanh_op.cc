@@ -34,28 +34,8 @@ struct TanhCPUFunctor {
   }
 };
 
-struct TanhGradientCPUFunctor {
-  template <typename T>
-  inline void Run(
-      const int n,
-      const T* y,
-      const T* dy,
-      T* dx,
-      CPUContext* /*device_context*/) {
-    ConstEigenVectorArrayMap<T> dy_arr(dy, n);
-    ConstEigenVectorArrayMap<T> y_arr(y, n);
-    EigenVectorMap<T>(dx, n) = dy_arr * (1 - y_arr * y_arr);
-  }
-};
-
 REGISTER_CPU_OPERATOR(
     Tanh, UnaryElementwiseOp<TensorTypes<float>, CPUContext, TanhCPUFunctor>);
-REGISTER_CPU_OPERATOR(
-    TanhGradient,
-    BinaryElementwiseOp<
-        TensorTypes<float>,
-        CPUContext,
-        WithoutBroadcast<TanhGradientCPUFunctor>>);
 
 OPERATOR_SCHEMA(Tanh)
   .NumInputs(1)
@@ -71,6 +51,5 @@ and output blobs.
   .Output(0, "output", "The hyperbolic tangent values of the input tensor "
           "computed element-wise");
 
-OPERATOR_SCHEMA(TanhGradient).NumInputs(2).NumOutputs(1).AllowInplace({{1, 0}});
 
 }  // namespace caffe2

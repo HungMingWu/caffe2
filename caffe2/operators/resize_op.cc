@@ -109,51 +109,7 @@ bool ResizeNearestOp<float, CPUContext>::RunOnDevice() {
   return true;
 }
 
-template <>
-bool ResizeNearestGradientOp<float, CPUContext>::RunOnDevice() {
-  const auto& dY = Input(0);
-  const auto& X = Input(1);
-  auto* dX = Output(0);
-
-  const auto& inputDims = dY.dims();
-  CAFFE_ENFORCE_EQ(4, inputDims.size());
-  const int batch_size = dY.dim32(0),
-            num_channels = dY.dim32(1),
-            input_height = dY.dim32(2),
-            input_width = dY.dim32(3);
-  const int output_height = X.dim32(2);
-  const int output_width = X.dim32(3);
-  dX->Resize(batch_size, num_channels, output_height, output_width);
-  math::Set<float, CPUContext>(dX->size(),
-                               0.0f,
-                               dX->mutable_data<float>(),
-                               &context_);
-
-  const float* dYdata = dY.data<float>();
-  float* dXdata = dX->mutable_data<float>();
-
-  for (int n = 0; n < batch_size; ++n) {
-    for (int c = 0; c < num_channels; ++c) {
-      for (int y = 0; y < input_height; ++y) {
-        const int out_y = std::min((int)(y / height_scale_),
-                                   (output_height - 1));
-        for (int x = 0; x < input_width; ++x) {
-          const int out_x = std::min((int)(x / width_scale_),
-                                     (output_width - 1));
-          dXdata[output_width * out_y + out_x] += dYdata[input_width * y + x];
-        }
-      }
-      dYdata += input_height * input_width;
-      dXdata += output_height * output_width;
-    }
-  }
-
-  return true;
-}
-
 REGISTER_CPU_OPERATOR(ResizeNearest, ResizeNearestOp<float, CPUContext>);
-REGISTER_CPU_OPERATOR(ResizeNearestGradient,
-                      ResizeNearestGradientOp<float, CPUContext>);
 
 // Input: X, output: Y
 OPERATOR_SCHEMA(ResizeNearest)
@@ -170,13 +126,6 @@ output_height = floor(output_height * height_scale)
 )DOC")
     .Input(0, "X", "Input tensor")
     .Output(0, "Y", "Output tensor");
-
-// Input: dY, output: dX
-OPERATOR_SCHEMA(ResizeNearestGradient)
-    .NumInputs(2)
-    .NumOutputs(1)
-    .Arg("width_scale", "Scale along width dimension")
-    .Arg("height_scale", "Scale along height dimension");
 
 
 } // namespace caffe2

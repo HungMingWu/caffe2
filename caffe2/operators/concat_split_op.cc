@@ -108,17 +108,4 @@ OPERATOR_SCHEMA(Concat)
     .Output(0, "concat_result", "Concatenated tensor")
     .Output(1, "split_info", "The dimensions of the inputs.");
 
-// Backward compatibility names.
-REGISTER_CPU_OPERATOR(DepthSplit, SplitOp<CPUContext>);
-REGISTER_CPU_OPERATOR(DepthConcat, ConcatOp<CPUContext>);
-OPERATOR_SCHEMA(DepthSplit)
-    .NumInputs(1, 2)
-    .NumOutputs(1, INT_MAX)
-    .SetDoc("Backward compatible operator name for Split.");
-OPERATOR_SCHEMA(DepthConcat)
-    .NumInputs(1, INT_MAX)
-    .NumOutputs(2)
-    .SetDoc("Backward compatible operator name for Concat.");
-
-
 }  // namespace caffe2

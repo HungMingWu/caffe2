@@ -40,21 +40,6 @@ class SoftmaxOp final : public Operator<Context> {
   Tensor<Context> sum_multiplier_;
 };
 
-template <typename T, class Context>
-class SoftmaxGradientOp final : public Operator<Context> {
- public:
-  SoftmaxGradientOp(const OperatorDef& operator_def, Workspace* ws)
-      : Operator<Context>(operator_def, ws),
-        axis_(OperatorBase::GetSingleArgument<int>("axis", 1)) {}
-  USE_OPERATOR_CONTEXT_FUNCTIONS;
-  bool RunOnDevice() override;
-
- protected:
-  int axis_;
-  Tensor<Context> scale_;
-  Tensor<Context> sum_multiplier_;
-};
-
 } // namespace caffe2
 
 #endif // CAFFE2_OPERATORS_SOFTMAX_OP_H_

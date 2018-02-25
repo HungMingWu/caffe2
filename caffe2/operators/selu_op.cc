@@ -16,25 +16,7 @@ bool SeluOp<float, CPUContext>::RunOnDevice() {
   return true;
 }
 
-template <>
-bool SeluGradientOp<float, CPUContext>::RunOnDevice() {
-  auto& Y = Input(0);
-  auto& dY = Input(1);
-  auto* dX = Output(0);
-  CAFFE_ENFORCE_EQ(dY.size(), Y.size());
-  dX->ResizeLike(Y);
-
-  ConstEigenVectorArrayMap<float> Yvec(Y.data<float>(), Y.size());
-  ConstEigenVectorArrayMap<float> dYvec(dY.data<float>(), dY.size());
-  EigenVectorArrayMap<float> dXvec(dX->mutable_data<float>(), dX->size());
-
-  const float la = lambda_ * alpha_;
-  dXvec = (Yvec > 0).select(lambda_ * dYvec, dYvec * (Yvec + la));
-  return true;
-}
-
 REGISTER_CPU_OPERATOR(Selu, SeluOp<float, CPUContext>);
-REGISTER_CPU_OPERATOR(SeluGradient, SeluGradientOp<float, CPUContext>);
 
 // Input: X; output: Y
 OPERATOR_SCHEMA(Selu)
@@ -57,26 +39,6 @@ is applied to the tensor elementwise.
         "(float) default to 1.0507~; affects the activation function itself.")
     .Input(0, "X", "input tensor")
     .Output(0, "Y", "input tensor");
-
-// Input: Y, dY; output: dX
-OPERATOR_SCHEMA(SeluGradient)
-    .NumInputs(2)
-    .NumOutputs(1)
-    .AllowInplace({{1, 0}})
-    .SetDoc(R"DOC(
-SeluGradient takes both Y and dY and uses this to update dX according to the
-chain rule and derivatives of the selu function.
-)DOC")
-    .Arg(
-        "alpha",
-        "(float) default to 1.6732~; affects the activation function itself."
-        "This should go with the weight initialization in the paper. "
-        " See https://arxiv.org/abs/1706.02515 ")
-    .Arg(
-        "scale",
-        "(float) default to 1.0507~; affects the activation function itself.")
-    .Input(0, "Y", "input tensor")
-    .Input(1, "dY", "input tensor");
 
 
 } // namespace caffe2

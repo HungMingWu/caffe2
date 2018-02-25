@@ -20,7 +20,6 @@
 namespace caffe2 {
 
 REGISTER_CPU_OPERATOR(Slice, SliceOp<int, CPUContext>);
-REGISTER_CPU_OPERATOR(SliceGradient, SliceGradientOp<int, CPUContext>);
 
 OPERATOR_SCHEMA(Slice)
     .NumInputs(1, 3)
@@ -90,7 +89,5 @@ Example:
           CreateTensorShape(dst_sizes, data.data_type())};
     })
     .Output(0, "output", "Sliced data tensor.");
-
-OPERATOR_SCHEMA(SliceGradient);
 
 } // namespace caffe2

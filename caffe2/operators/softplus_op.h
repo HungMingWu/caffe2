@@ -35,18 +35,6 @@ class SoftplusOp final : public Operator<Context> {
  protected:
 };
 
-template <typename T, class Context>
-class SoftplusGradientOp final : public Operator<Context> {
- public:
-  USE_SIMPLE_CTOR_DTOR(SoftplusGradientOp)
-  USE_OPERATOR_CONTEXT_FUNCTIONS;
-
-  bool RunOnDevice() override;
-
- protected:
-  // Input: Y, dY; Output: dX
-};
-
 } // namespace caffe2
 
 #endif // CAFFE2_OPERATORS_SOFTPLUS_OP_H_

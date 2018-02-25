@@ -93,45 +93,6 @@ OPERATOR_SCHEMA(Div)
     .FillUsing(MathDocGenerator("division"));
 OPERATOR_SCHEMA(DivGradient).NumInputs(3).NumOutputs(2).AllowInplace({{0, 0}});
 
-OPERATOR_SCHEMA(SumReduceLike)
-    .NumInputs(2)
-    .NumOutputs(1)
-    .IdenticalTypeAndShapeOfInput(0)
-    .SetDoc(R"DOC(
-SumReduceLike operator takes 2 tensors as input. It performs reduce sum to the
-first input so that the output looks like the second one.
-It assumes that the first input
-has more dimensions than the second, and the dimensions of the second input is
-the contiguous subset of the dimensions of the first.
-For example, the following tensor shapes are supported:
-
-  shape(A) = (2, 3, 4, 5), shape(B) = (4, 5)
-  shape(A) = (2, 3, 4, 5), shape(B) = (,), i.e. B is a scalar
-  shape(A) = (2, 3, 4, 5), shape(B) = (3, 4), with axis=1
-  shape(A) = (2, 3, 2, 5), shape(B) = (2), with axis=0
-    )DOC")
-    .Arg(
-        "axis",
-        "If set, defines the starting dimension for reduction. Args `axis` and "
-        "`axis_str` cannot be used simultaneously.")
-    .Arg(
-        "axis_str",
-        "If set, it could only be N or C or H or W. `order` arg should also be "
-        "provided. It defines the reduction dimensions on NCHW or NHWC. Args "
-        "`axis` and `axis_str` cannot be used simultaneously.")
-    .Arg("order", "Either NHWC or HCWH")
-    .Input(
-        0,
-        "A",
-        "First operand, should share the type with the second operand.")
-    .Input(
-        1,
-        "B",
-        "Second operand. With broadcasting can be of smaller size than A. "
-        "If broadcasting is disabled it should be of the same size.")
-    .Output(0, "C", "Result, has same dimensions and type as B");
-
-
 std::function<void(OpSchema&)> ComparisonDocGenerator(
     const char* name,
     const char* desc) {

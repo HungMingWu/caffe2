@@ -53,10 +53,6 @@ dynamic_rnn, Theano scan, etc).
 See the usage examples for a flavor of how to use it.
 )DOC");
 
-REGISTER_CPU_OPERATOR(
-    RecurrentNetworkGradient,
-    RecurrentNetworkGradientOp<CPUContext>);
-OPERATOR_SCHEMA(RecurrentNetworkGradient);
 
 REGISTER_CPU_OPERATOR(
     rnn_internal_accumulate_gradient_input,

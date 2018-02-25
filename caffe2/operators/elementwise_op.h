@@ -323,54 +323,6 @@ void RunWithBroadcast2(
 
 } // namespace SRLHelper
 
-// Sum reduction operator that is used for computing the gradient in cases
-// where the forward op is in broadcast mode.
-template <class Context>
-class SumReduceLikeOp final : public Operator<Context> {
- public:
-  USE_OPERATOR_CONTEXT_FUNCTIONS;
-  SumReduceLikeOp(const OperatorDef& operator_def, Workspace* ws)
-      : Operator<Context>(operator_def, ws),
-        OP_SINGLE_ARG(int, "axis", axis_, -1),
-        OP_SINGLE_ARG(string, "axis_str", axis_str_, ""),
-        OP_SINGLE_ARG(string, "order", order_, "NCHW") {
-    if (axis_ != -1) {
-      // Get axis from an explicit axis argument.
-      CAFFE_ENFORCE_EQ(
-          axis_str_.size(),
-          0,
-          "Args axis and axis_str cannot be used simultaneously.");
-    } else if (axis_str_.size()) {
-      // Get the axis index semantically.
-      CAFFE_ENFORCE_EQ(
-          axis_str_.size(), 1, "Unsupported axis string", axis_str_);
-      size_t semantic_axis = order_.find(axis_str_);
-      CAFFE_ENFORCE_NE(
-          semantic_axis,
-          string::npos,
-          "Unrecognizable axis string ",
-          axis_str_,
-          " from order string ",
-          order_);
-      axis_ = semantic_axis;
-    }
-  }
-
-  bool RunOnDevice() override {
-    return DispatchHelper<TensorTypes<float, double>>::call(this, Input(0));
-  }
-
-  template <typename T>
-  bool DoRunWithType();
-
- private:
-  int axis_;
-  string axis_str_;
-  string order_;
-  Tensor<Context> ones_;
-  Tensor<Context> sum_buffer_;
-};
-
 template <class Context>
 bool DivGradientOp<Context>::RunOnDevice() {
   auto& Y = Input(0);

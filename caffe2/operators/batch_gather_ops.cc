@@ -19,7 +19,6 @@
 namespace caffe2 {
 
 REGISTER_CPU_OPERATOR(BatchGather, BatchGatherOp<CPUContext>);
-REGISTER_CPU_OPERATOR(BatchGatherGradient, BatchGatherGradientOp<CPUContext>);
 
 OPERATOR_SCHEMA(BatchGather)
     .NumInputs(2)
@@ -65,8 +64,5 @@ Example:
     .Input(0, "DATA", "Tensor of rank r >= 2.")
     .Input(1, "INDICES", "Tensor of int32/int64 indices, of any rank q.")
     .Output(0, "OUTPUT", "Tensor of rank (q - 1) + (r - 1).");
-
-OPERATOR_SCHEMA(BatchGatherGradient).NumInputs(3).NumOutputs(1);
-
 
 } // namespace caffe2
