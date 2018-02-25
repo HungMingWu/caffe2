@@ -4,30 +4,9 @@
 [submodule "third_party/googletest"]
 	path = third_party/googletest
 	url = https://github.com/google/googletest.git
-[submodule "third_party/benchmark"]
-	path = third_party/benchmark
-	url = https://github.com/google/benchmark.git
 [submodule "third_party/ios-cmake"]
 	path = third_party/ios-cmake
 	url = https://github.com/Yangqing/ios-cmake.git
-[submodule "third_party/NNPACK_deps/FXdiv"]
-	path = third_party/FXdiv
-	url = https://github.com/Maratyszcza/FXdiv.git
-[submodule "third_party/NNPACK_deps/FP16"]
-	path = third_party/FP16
-	url = https://github.com/Maratyszcza/FP16.git
-[submodule "third_party/NNPACK_deps/psimd"]
-	path = third_party/psimd
-	url = https://github.com/Maratyszcza/psimd.git
 [submodule "third_party/aten"]
 	path = third_party/aten
 	url = https://github.com/zdevito/aten
-[submodule "third-party/cpuinfo"]
-	path = third_party/cpuinfo
-	url = https://github.com/Maratyszcza/cpuinfo.git
-[submodule "third_party/python-enum"]
-	path = third_party/python-enum
-	url = https://github.com/PeachPy/enum34.git
-[submodule "third_party/python-peachpy"]
-	path = third_party/python-peachpy
-	url = https://github.com/Maratyszcza/PeachPy.git
