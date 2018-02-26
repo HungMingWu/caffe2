@@ -23,7 +23,6 @@
 #include <type_traits>
 #include <vector>
 
-#include "caffe2/core/blob_serializer_base.h"
 #include "caffe2/core/common.h"
 #include "caffe2/core/typeid.h"
 #include "caffe2/core/logging.h"
@@ -206,29 +205,6 @@ class Blob {
   }
 
   /**
-   * Serializes the current blob, if possible. Note that this serialization uses
-   * the registration mechanism and one has to implement specific serialization
-   * approaches for specific classes. Acceptor should take care of writing data
-   * to the actual storage.
-   */
-  void Serialize(
-      const string& name,
-      BlobSerializerBase::SerializationAcceptor acceptor,
-      int chunk_size = kDefaultChunkSize) const;
-
-  /**
-   * @brief Convenience function to serialize a blob to a string.
-   *
-   * This is a conveinence function to serialize small Blobs that produce
-   * manageable serialized strings. To serialize big blobs such as
-   * large sparse tensors, use the fully-functional interface in
-   * blob_serializer_base.h.
-   *
-   * NOTE: this function doesn't do chunking and might break with big tensors.
-   */
-  string Serialize(const string& name) const;
-
-  /**
    * @brief Swaps the underlying storage of two blobs.
    */
   void swap(Blob& rhs) {
@@ -237,14 +213,6 @@ class Blob {
     swap(pointer_, rhs.pointer_);
     swap(destroy_, rhs.destroy_);
   }
-
-  /**
-   * Deserializes from a string containing either BlobProto or TensorProto. If
-   * the deserialization fails, the content in the blob should no longer be
-   * trusted.
-   */
-  void Deserialize(const string& content);
-  void Deserialize(const BlobProto& proto);
 
  private:
   /**

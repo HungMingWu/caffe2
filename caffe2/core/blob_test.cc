@@ -20,7 +20,6 @@
 
 #include <gtest/gtest.h>
 #include "caffe2/core/blob.h"
-#include "caffe2/core/blob_serialization.h"
 #include "caffe2/core/common.h"
 #include "caffe2/core/context.h"
 #include "caffe2/core/operator.h"
@@ -46,42 +45,6 @@ class BlobTestBar {};
 
 CAFFE_KNOWN_TYPE(BlobTestFoo);
 CAFFE_KNOWN_TYPE(BlobTestBar);
-
-class BlobTestFooSerializer : public BlobSerializerBase {
- public:
-  BlobTestFooSerializer() {}
-  ~BlobTestFooSerializer() {}
-  /**
-   * Serializes a Blob. Note that this blob has to contain Tensor<Context>,
-   * otherwise this function produces a fatal error.
-   */
-  void Serialize(
-      const Blob& blob,
-      const string& name,
-      SerializationAcceptor acceptor) override {
-    CAFFE_ENFORCE(blob.IsType<BlobTestFoo>());
-
-    BlobProto blob_proto;
-    blob_proto.set_name(name);
-    blob_proto.set_type("BlobTestFoo");
-    // For simplicity we will just serialize the 4-byte content as a string.
-    blob_proto.set_content(std::string(
-        reinterpret_cast<const char*>(&(blob.Get<BlobTestFoo>().val)),
-        sizeof(int32_t)));
-    acceptor(name, blob_proto.SerializeAsString());
-  }
-};
-
-class BlobTestFooDeserializer : public BlobDeserializerBase {
- public:
-  void Deserialize(const BlobProto& proto, Blob* blob) override {
-    blob->GetMutable<BlobTestFoo>()->val =
-        reinterpret_cast<const int32_t*>(proto.content().c_str())[0];
-  }
-};
-
-REGISTER_BLOB_SERIALIZER((TypeMeta::Id<BlobTestFoo>()), BlobTestFooSerializer);
-REGISTER_BLOB_DESERIALIZER(BlobTestFoo, BlobTestFooDeserializer);
 
 namespace {
 
@@ -165,20 +128,6 @@ TEST(BlobTest, BlobShareExternalObject) {
   EXPECT_TRUE(blob.IsType<BlobTestFoo>());
   // Also test that Reset works.
   blob.Reset();
-}
-
-TEST(BlobTest, StringSerialization) {
-  const std::string kTestString = "Hello world?";
-  Blob blob;
-  *blob.GetMutable<std::string>() = kTestString;
-
-  string serialized = blob.Serialize("test");
-  BlobProto proto;
-  CHECK(proto.ParseFromString(serialized));
-  EXPECT_EQ(proto.name(), "test");
-  EXPECT_EQ(proto.type(), "std::string");
-  EXPECT_FALSE(proto.has_tensor());
-  EXPECT_EQ(proto.content(), kTestString);
 }
 
 TEST(TensorNonTypedTest, TensorChangeType) {
@@ -568,142 +517,6 @@ TEST(TensorDeathTest, CannotCastDownLargeDims) {
   ASSERT_THROW(tensor.dim32(0), EnforceNotMet);
 }
 
-#define TEST_SERIALIZATION_WITH_TYPE(TypeParam, field_name)               \
-  TEST(TensorTest, TensorSerialization_##TypeParam) {                     \
-    Blob blob;                                                            \
-    TensorCPU* tensor = blob.GetMutable<TensorCPU>();                     \
-    tensor->Resize(2, 3);                                                 \
-    for (int i = 0; i < 6; ++i) {                                         \
-      tensor->mutable_data<TypeParam>()[i] = static_cast<TypeParam>(i);   \
-    }                                                                     \
-    string serialized = blob.Serialize("test");                           \
-    BlobProto proto;                                                      \
-    CHECK(proto.ParseFromString(serialized));                             \
-    EXPECT_EQ(proto.name(), "test");                                      \
-    EXPECT_EQ(proto.type(), "Tensor");                                    \
-    EXPECT_TRUE(proto.has_tensor());                                      \
-    const TensorProto& tensor_proto = proto.tensor();                     \
-    EXPECT_EQ(                                                            \
-        tensor_proto.data_type(),                                         \
-        TypeMetaToDataType(TypeMeta::Make<TypeParam>()));                 \
-    EXPECT_EQ(tensor_proto.field_name##_size(), 6);                       \
-    for (int i = 0; i < 6; ++i) {                                         \
-      EXPECT_EQ(tensor_proto.field_name(i), static_cast<TypeParam>(i));   \
-    }                                                                     \
-    Blob new_blob;                                                        \
-    EXPECT_NO_THROW(new_blob.Deserialize(serialized));                    \
-    EXPECT_TRUE(new_blob.IsType<TensorCPU>());                            \
-    const TensorCPU& new_tensor = blob.Get<TensorCPU>();                  \
-    EXPECT_EQ(new_tensor.ndim(), 2);                                      \
-    EXPECT_EQ(new_tensor.dim(0), 2);                                      \
-    EXPECT_EQ(new_tensor.dim(1), 3);                                      \
-    for (int i = 0; i < 6; ++i) {                                         \
-      EXPECT_EQ(                                                          \
-          tensor->data<TypeParam>()[i], new_tensor.data<TypeParam>()[i]); \
-    }                                                                     \
-  }                                                                       \
-                                                                          \
-  TEST(EmptyTensorTest, TensorSerialization_##TypeParam) {                \
-    Blob blob;                                                            \
-    TensorCPU* tensor = blob.GetMutable<TensorCPU>();                     \
-    tensor->Resize(0, 3);                                                 \
-    tensor->mutable_data<TypeParam>();                                    \
-    string serialized = blob.Serialize("test");                           \
-    BlobProto proto;                                                      \
-    CHECK(proto.ParseFromString(serialized));                             \
-    EXPECT_EQ(proto.name(), "test");                                      \
-    EXPECT_EQ(proto.type(), "Tensor");                                    \
-    EXPECT_TRUE(proto.has_tensor());                                      \
-    const TensorProto& tensor_proto = proto.tensor();                     \
-    EXPECT_EQ(                                                            \
-        tensor_proto.data_type(),                                         \
-        TypeMetaToDataType(TypeMeta::Make<TypeParam>()));                 \
-    EXPECT_EQ(tensor_proto.field_name##_size(), 0);                       \
-    Blob new_blob;                                                        \
-    EXPECT_NO_THROW(new_blob.Deserialize(serialized));                    \
-    EXPECT_TRUE(new_blob.IsType<TensorCPU>());                            \
-    const TensorCPU& new_tensor = blob.Get<TensorCPU>();                  \
-    EXPECT_EQ(new_tensor.ndim(), 2);                                      \
-    EXPECT_EQ(new_tensor.dim(0), 0);                                      \
-    EXPECT_EQ(new_tensor.dim(1), 3);                                      \
-  }
-
-TEST_SERIALIZATION_WITH_TYPE(bool, int32_data)
-TEST_SERIALIZATION_WITH_TYPE(double, double_data)
-TEST_SERIALIZATION_WITH_TYPE(float, float_data)
-TEST_SERIALIZATION_WITH_TYPE(int, int32_data)
-TEST_SERIALIZATION_WITH_TYPE(int8_t, int32_data)
-TEST_SERIALIZATION_WITH_TYPE(int16_t, int32_data)
-TEST_SERIALIZATION_WITH_TYPE(uint8_t, int32_data)
-TEST_SERIALIZATION_WITH_TYPE(uint16_t, int32_data)
-TEST_SERIALIZATION_WITH_TYPE(int64_t, int64_data)
-
-TEST(TensorTest, TensorSerialization_CustomType) {
-  Blob blob;
-  TensorCPU* tensor = blob.GetMutable<TensorCPU>();
-  tensor->Resize(2, 3);
-  for (int i = 0; i < 6; ++i) {
-    tensor->mutable_data<BlobTestFoo>()[i].val = i;
-  }
-  string serialized = blob.Serialize("test");
-  BlobProto proto;
-  CHECK(proto.ParseFromString(serialized));
-  EXPECT_EQ(proto.name(), "test");
-  EXPECT_EQ(proto.type(), "Tensor");
-  Blob new_blob;
-  EXPECT_NO_THROW(new_blob.Deserialize(serialized));
-  EXPECT_TRUE(new_blob.IsType<TensorCPU>());
-  const TensorCPU& new_tensor = blob.Get<TensorCPU>();
-  EXPECT_EQ(new_tensor.ndim(), 2);
-  EXPECT_EQ(new_tensor.dim(0), 2);
-  EXPECT_EQ(new_tensor.dim(1), 3);
-  for (int i = 0; i < 6; ++i) {
-    EXPECT_EQ(
-        new_tensor.data<BlobTestFoo>()[i].val,
-        tensor->data<BlobTestFoo>()[i].val);
-  }
-}
-
-TEST(TensorTest, float16) {
-  const TIndex kSize = 3000000;
-  Blob blob;
-  TensorCPU* tensor = blob.GetMutable<TensorCPU>();
-  tensor->Resize(kSize);
-  for (int i = 0; i < tensor->size(); ++i) {
-    tensor->mutable_data<float16>()[i].x = i % 10000;
-  }
-  string serialized = blob.Serialize("test");
-  BlobProto proto;
-  CHECK(proto.ParseFromString(serialized));
-  EXPECT_EQ(proto.name(), "test");
-  EXPECT_EQ(proto.type(), "Tensor");
-  EXPECT_TRUE(proto.has_tensor());
-  const TensorProto& tensor_proto = proto.tensor();
-  EXPECT_EQ(
-      tensor_proto.data_type(), TypeMetaToDataType(TypeMeta::Make<float16>()));
-  if (FLAGS_caffe2_serialize_fp16_as_bytes) {
-    EXPECT_EQ(tensor_proto.byte_data().size(), 2 * kSize);
-    for (int i = 0; i < kSize; ++i) {
-      auto value = tensor->mutable_data<float16>()[i].x;
-      auto low_bits = static_cast<char>(value & 0xff);
-      auto high_bits = static_cast<char>(value >> 8);
-      EXPECT_EQ(tensor_proto.byte_data()[2 * i], low_bits);
-      EXPECT_EQ(tensor_proto.byte_data()[2 * i + 1], high_bits);
-    }
-  } else {
-    EXPECT_EQ(tensor_proto.int32_data().size(), kSize);
-  }
-  Blob new_blob;
-  EXPECT_NO_THROW(new_blob.Deserialize(serialized));
-  EXPECT_TRUE(new_blob.IsType<TensorCPU>());
-  const TensorCPU& new_tensor = blob.Get<TensorCPU>();
-  EXPECT_EQ(new_tensor.ndim(), 1);
-  EXPECT_EQ(new_tensor.dim(0), kSize);
-  for (int i = 0; i < kSize; ++i) {
-    EXPECT_EQ(new_tensor.data<float16>()[i].x, i % 10000);
-  }
-}
-
 using StringMap = std::vector<std::pair<string, string>>;
 
 template <typename TypeParam>
@@ -762,56 +575,17 @@ struct DummyType {
    */
 
   /* implicit */ DummyType(int n_chunks_init = 0) : n_chunks(n_chunks_init) {}
-  std::string serialize(const std::string& name, const int32_t chunk_id) const {
-    BlobProto blobProto;
-    blobProto.set_name(name);
-    blobProto.set_type("DummyType");
-    std::string content("");
-    blobProto.set_content(content);
-    blobProto.set_content_num_chunks(n_chunks);
-    blobProto.set_content_chunk_id(chunk_id);
-    return blobProto.SerializeAsString();
-  }
   void deserialize(const BlobProto& /* unused */) {
     ++n_chunks;
   }
   int n_chunks;
 };
 
-class DummyTypeSerializer : public BlobSerializerBase {
- public:
-  DummyTypeSerializer() {}
-  ~DummyTypeSerializer() {}
-  void Serialize(
-      const Blob& blob,
-      const string& name,
-      SerializationAcceptor acceptor) override {
-    CAFFE_ENFORCE(blob.IsType<DummyType>());
-    const auto& container = blob.template Get<DummyType>();
-    for (int k = 0; k < container.n_chunks; ++k) {
-      std::string serialized_chunk = container.serialize(name, k);
-      acceptor(MakeString(name, kChunkIdSeparator, k), serialized_chunk);
-    }
-  }
-};
-
-class DummyTypeDeserializer : public BlobDeserializerBase {
- public:
-  void Deserialize(const BlobProto& proto, Blob* blob) override {
-    auto* container = blob->GetMutable<DummyType>();
-    container->deserialize(proto);
-  }
-};
 }
 
 CAFFE_KNOWN_TYPE(DummyType);
 
 namespace {
-REGISTER_BLOB_SERIALIZER((TypeMeta::Id<DummyType>()), DummyTypeSerializer);
-CAFFE_REGISTER_TYPED_CLASS(
-    BlobDeserializerRegistry,
-    "DummyType",
-    DummyTypeDeserializer);
 
 TEST(ContentChunks, Serialization) {
   string db_source = (string)std::tmpnam(nullptr);
@@ -843,36 +617,6 @@ TEST(ContentChunks, Serialization) {
     const auto& container = new_blob->Get<DummyType>();
     EXPECT_EQ(container.n_chunks, 10);
   }
-}
-
-TEST(CustomChunkSize, BigTensorSerialization) {
-  int64_t d1 = 2;
-  int64_t d2 = FLAGS_caffe2_test_big_tensor_size
-      ? FLAGS_caffe2_test_big_tensor_size / d1
-      : static_cast<int64_t>(std::numeric_limits<int>::max()) + 1;
-  int64_t size = d1 * d2;
-
-  Blob blob;
-  TensorCPU* tensor = blob.GetMutable<TensorCPU>();
-  tensor->Resize(d1, d2);
-  tensor->mutable_data<float>();
-  std::mutex mutex;
-  int counter = 0;
-  auto acceptor = [&](const std::string& /*key*/,
-                      const std::string& /*value*/) {
-    std::lock_guard<std::mutex> guard(mutex);
-    counter++;
-  };
-  blob.Serialize("test", acceptor, size);
-  EXPECT_EQ(counter, 1);
-
-  counter = 0;
-  blob.Serialize("test", acceptor, (size / 2) + 1);
-  EXPECT_EQ(counter, 2);
-
-  counter = 0;
-  blob.Serialize("test", acceptor, kNoChunking);
-  EXPECT_EQ(counter, 1);
 }
 
 TEST(BlobTest, CastingMessage) {
