@@ -34,7 +34,4 @@ the tensor elementwise. Currently supports only float32.
     .Input(0, "X", "ND input tensor")
     .Output(0, "Y", "ND input tensor");
 
-// TODO: Write gradient for this when needed
-GRADIENT_NOT_IMPLEMENTED_YET(Ceil);
-
 } // namespace caffe2
