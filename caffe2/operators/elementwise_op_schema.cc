@@ -91,7 +91,6 @@ OPERATOR_SCHEMA(Div)
     .CostInferenceFunction(PointwiseCostInference<1>)
     .IdenticalTypeAndShapeOfInput(0)
     .FillUsing(MathDocGenerator("division"));
-OPERATOR_SCHEMA(DivGradient).NumInputs(3).NumOutputs(2).AllowInplace({{0, 0}});
 
 std::function<void(OpSchema&)> ComparisonDocGenerator(
     const char* name,

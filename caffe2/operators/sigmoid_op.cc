@@ -28,28 +28,9 @@ struct SigmoidCPUFunctor {
   }
 };
 
-struct SigmoidGradientCPUFunctor {
-  template <typename T>
-  inline void Run(
-      const int n,
-      const T* y,
-      const T* dy,
-      T* dx,
-      CPUContext* /*device_context*/) {
-    ConstEigenVectorArrayMap<T> yM(y, n), dyM(dy, n);
-    EigenVectorArrayMap<T>(dx, n) = dyM * yM * (1. - yM);
-  }
-};
-
 REGISTER_CPU_OPERATOR(
     Sigmoid, UnaryElementwiseOp<
         TensorTypes<float>, CPUContext, SigmoidCPUFunctor>);
-REGISTER_CPU_OPERATOR(
-    SigmoidGradient,
-    BinaryElementwiseOp<
-        TensorTypes<float>,
-        CPUContext,
-        WithoutBroadcast<SigmoidGradientCPUFunctor>>);
 
 // Input: X, output: Y
 OPERATOR_SCHEMA(Sigmoid)
@@ -64,14 +45,5 @@ tensor elementwise.
 )DOC")
   .Input(0, "X", "1D input tensor")
   .Output(0, "Y", "1D output tensor");
-// Input: Y, dY, output: dX
-OPERATOR_SCHEMA(SigmoidGradient)
-  .NumInputs(2)
-  .NumOutputs(1)
-  .AllowInplace({{1, 0}})
-  .SetDoc(R"DOC(
-SigmoidGradient takes both Y and dY and uses this to update dX according to the
-chain rule and derivatives of the sigmoid function.
-)DOC");
 
 }  // namespace caffe2

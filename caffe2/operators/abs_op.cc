@@ -27,26 +27,9 @@ struct AbsCPUFunctor {
   }
 };
 
-struct AbsGradientCPUFunctor {
-  template <typename T>
-  inline void
-  Run(const int n, const T* x, const T* dy, T* dx, CPUContext* /* unused */) {
-    ConstEigenVectorArrayMap<T> dyM(dy, n);
-    ConstEigenVectorArrayMap<T> xM(x, n);
-    EigenVectorMap<T>(dx, n) =
-        (xM == T(0)).select(T(0), (xM > T(0)).select(dyM, -dyM));
-  }
-};
-
 REGISTER_CPU_OPERATOR(
     Abs,
     UnaryElementwiseOp<TensorTypes<float>, CPUContext, AbsCPUFunctor>);
-REGISTER_CPU_OPERATOR(
-    AbsGradient,
-    BinaryElementwiseOp<
-        TensorTypes<float>,
-        CPUContext,
-        WithoutBroadcast<AbsGradientCPUFunctor>>);
 
 OPERATOR_SCHEMA(Abs)
     .NumInputs(1)
@@ -60,7 +43,5 @@ Calculates the absolute value of the given input tensor, element-wise.
         0,
         "output",
         "The absolute value of the input tensor computed element-wise");
-
-OPERATOR_SCHEMA(AbsGradient).NumInputs(2).NumOutputs(1).IdenticalTypeAndShape();
 
 } // namespace caffe2

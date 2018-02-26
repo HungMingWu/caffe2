@@ -27,25 +27,9 @@ struct CosCPUFunctor {
   }
 };
 
-struct CosGradientCPUFunctor {
-  template <typename T>
-  inline void
-  Run(const int n, const T* x, const T* dy, T* dx, CPUContext* /* unused */) {
-    ConstEigenVectorArrayMap<T> dyM(dy, n);
-    ConstEigenVectorArrayMap<T> xM(x, n);
-    EigenVectorMap<T>(dx, n) = -dyM * sin(xM);
-  }
-};
-
 REGISTER_CPU_OPERATOR(
     Cos,
     UnaryElementwiseOp<TensorTypes<float>, CPUContext, CosCPUFunctor>);
-REGISTER_CPU_OPERATOR(
-    CosGradient,
-    BinaryElementwiseOp<
-        TensorTypes<float>,
-        CPUContext,
-        WithoutBroadcast<CosGradientCPUFunctor>>);
 
 OPERATOR_SCHEMA(Cos)
     .NumInputs(1)
@@ -60,6 +44,5 @@ Calculates the cosine of the given input tensor, element-wise.
         "output",
         "The cosine of the input tensor computed element-wise");
 
-OPERATOR_SCHEMA(CosGradient).NumInputs(2).NumOutputs(1).IdenticalTypeAndShape();
 
 } // namespace caffe2

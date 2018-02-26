@@ -55,18 +55,6 @@ See the usage examples for a flavor of how to use it.
 
 
 REGISTER_CPU_OPERATOR(
-    rnn_internal_accumulate_gradient_input,
-    AccumulateInputGradientOp<CPUContext>);
-OPERATOR_SCHEMA(rnn_internal_accumulate_gradient_input)
-    .NumInputs(3)
-    .NumOutputs(1, INT_MAX)
-    .EnforceInplace({{2, 0}})
-    .Private()
-    .SetDoc(R"DOC(
-Internal RNN operator.
-)DOC");
-
-REGISTER_CPU_OPERATOR(
     rnn_internal_apply_link,
     RNNApplyLinkOp<CPUContext>);
 OPERATOR_SCHEMA(rnn_internal_apply_link)

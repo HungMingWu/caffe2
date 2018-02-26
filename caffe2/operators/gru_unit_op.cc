@@ -40,13 +40,5 @@ value at X[t][n] >= seqLengths[n].
         "When false, the sequence lengths input is left out, "
         "and all following inputs are shifted left by one.")
     .Output(0, "hidden", "The new GRU hidden state calculated by this op.");
-REGISTER_CPU_OPERATOR(GRUUnitGradient, GRUUnitGradientOp<float, CPUContext>);
-OPERATOR_SCHEMA(GRUUnitGradient)
-    .NumInputs(5, 6)
-    .NumOutputs(2)
-    .Arg(
-        "sequence_lengths",
-        "When false, the sequence lengths input is left out, "
-        "and all following inputs are shifted left by one.");
 
 } // namespace caffe2

@@ -291,16 +291,6 @@ struct WithoutBroadcast {
   }
 };
 
-// Gradient operator for elementwise division.
-template <class Context>
-class DivGradientOp final : public Operator<Context> {
- public:
-  USE_SIMPLE_CTOR_DTOR(DivGradientOp);
-  USE_OPERATOR_CONTEXT_FUNCTIONS;
-
-  bool RunOnDevice() override;
-};
-
 namespace SRLHelper {
 
 template <typename T>
@@ -322,28 +312,6 @@ void RunWithBroadcast2(
     CPUContext*);
 
 } // namespace SRLHelper
-
-template <class Context>
-bool DivGradientOp<Context>::RunOnDevice() {
-  auto& Y = Input(0);
-  auto& Z = Input(1);
-  auto& dZ = Input(2);
-  auto* dX = Output(0);
-  auto* dY = Output(1);
-  CAFFE_ENFORCE_GT(Y.size(), 0);
-  CAFFE_ENFORCE_GT(Z.size(), 0);
-  dX->ResizeLike(Y);
-  dY->ResizeLike(Y);
-
-  const float* Ydata = Y.template data<float>();
-  const float* Zdata = Z.template data<float>();
-  const float* dZdata = dZ.template data<float>();
-  float* dXdata = dX->template mutable_data<float>();
-  float* dYdata = dY->template mutable_data<float>();
-
-  ElementWiseDivide(context_, Y.size(), dXdata, dYdata, dZdata, Ydata, Zdata);
-  return true;
-}
 
 // For arithmetic operators, Eigen provides a good way to vectorize even
 // when broadcasting.

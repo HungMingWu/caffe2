@@ -33,20 +33,11 @@ namespace detail {
 struct Param {
   std::string param;
   std::string grad;
-  std::string cellGradient;
 };
 
 struct RecurrentInput {
   std::string state;
   std::string input;
-};
-
-struct RecurrentGradient {
-  std::string param;
-  std::string grad;
-  std::string externalGrad;
-  std::string lastExternalGrad;
-  int32_t offset;
 };
 
 struct OffsetAlias {
@@ -409,50 +400,6 @@ class RecurrentNetworkOp final : public Operator<Context> {
   std::vector<detail::OffsetAlias> aliases_;
   std::vector<detail::RecurrentInput> recurrentInputs_;
   std::string timestep_;
-};
-
-template <class Context>
-class AccumulateInputGradientOp : public Operator<Context> {
- public:
-  AccumulateInputGradientOp(const OperatorDef& def, Workspace* ws)
-      : Operator<Context>(def, ws),
-        offset_(OperatorBase::GetSingleArgument<int>("offset", -1)) {
-    CAFFE_ENFORCE(offset_ >= 0, "Offset not set");
-  }
-  USE_OPERATOR_CONTEXT_FUNCTIONS;
-
-  template<typename T>
-  bool DoRunWithType() {
-    const auto& t0 = OperatorBase::Input<Tensor<CPUContext>>(0);
-    const auto t = t0.template data<int32_t>()[0];
-    auto& og = Input(1);
-    auto* g = Output(0);
-
-    T* g_data = g->template mutable_data<T>();
-    const auto timestep_size = g->size() / g->dim(0);
-
-    CAFFE_ENFORCE(
-        (t + offset_) * timestep_size + timestep_size <= g->size(),
-        "Accumulation destination address over bounds");
-    CAFFE_ENFORCE(
-        t * timestep_size + timestep_size <= og.size(),
-        "Accumulation source address out of bounds");
-
-    math::Add<T, Context>(
-        timestep_size,
-        og.template data<T>() + t * timestep_size,
-        g_data + (t + offset_) * timestep_size,
-        g_data + (t + offset_) * timestep_size,
-        &context_);
-    return true;
-  }
-
-  bool RunOnDevice() override {
-    return DispatchHelper<TensorTypes<float>>::call(this, Input(1));
-  }
-
- private:
-  int offset_;
 };
 
 template <class Context>

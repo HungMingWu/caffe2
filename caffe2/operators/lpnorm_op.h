@@ -42,25 +42,6 @@ class LpNormOp : public Operator<Context> {
   // Input: X; Output: Norm
 };
 
-template <typename T, class Context>
-class LpNormGradientOp : public Operator<Context> {
- public:
-  USE_OPERATOR_CONTEXT_FUNCTIONS;
-  LpNormGradientOp(const OperatorDef& def, Workspace* ws)
-      : Operator<Context>(def, ws),
-        p_(OperatorBase::GetSingleArgument<int>("p", 2)) {
-    CAFFE_ENFORCE(p_ == 1 || p_ == 2, "p should be either 1 or 2.");
-  }
-
-  bool RunOnDevice() override;
-
- protected:
-  int p_;
-  INPUT_TAGS(X_IN, DER_NORM_IN);
-  OUTPUT_TAGS(DER_X_OUT);
-  // Input: X, dNorm; Output: dX
-};
-
 } // namespace caffe2
 
 #endif // CAFFE2_OPERATORS_LPNORM_OP_H_

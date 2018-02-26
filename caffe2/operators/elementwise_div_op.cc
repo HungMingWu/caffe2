@@ -39,5 +39,4 @@ void ElementWiseDivide(
   EigenVectorArrayMap<float>(dYdata, n) = - (dZdataVec * ZdataVec) / YdataVec;
 }
 
-REGISTER_CPU_OPERATOR(DivGradient, DivGradientOp<CPUContext>);
 }

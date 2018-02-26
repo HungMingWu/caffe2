@@ -27,25 +27,9 @@ struct SinCPUFunctor {
   }
 };
 
-struct SinGradientCPUFunctor {
-  template <typename T>
-  inline void
-  Run(const int n, const T* x, const T* dy, T* dx, CPUContext* /* unused */) {
-    ConstEigenVectorArrayMap<T> dyM(dy, n);
-    ConstEigenVectorArrayMap<T> xM(x, n);
-    EigenVectorMap<T>(dx, n) = dyM * cos(xM);
-  }
-};
-
 REGISTER_CPU_OPERATOR(
     Sin,
     UnaryElementwiseOp<TensorTypes<float>, CPUContext, SinCPUFunctor>);
-REGISTER_CPU_OPERATOR(
-    SinGradient,
-    BinaryElementwiseOp<
-        TensorTypes<float>,
-        CPUContext,
-        WithoutBroadcast<SinGradientCPUFunctor>>);
 
 OPERATOR_SCHEMA(Sin)
     .NumInputs(1)
@@ -56,7 +40,5 @@ Calculates the sine of the given input tensor, element-wise.
 )DOC")
     .Input(0, "input", "Input tensor")
     .Output(0, "output", "The sine of the input tensor computed element-wise");
-
-OPERATOR_SCHEMA(SinGradient).NumInputs(2).NumOutputs(1).IdenticalTypeAndShape();
 
 } // namespace caffe2

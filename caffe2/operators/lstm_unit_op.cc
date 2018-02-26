@@ -36,13 +36,5 @@ value at X{t][n] >= seqLengths[n].
         "sequence_lengths",
         "When false, the sequence lengths input is left out, "
         "and all following inputs are shifted left by one.");
-REGISTER_CPU_OPERATOR(LSTMUnitGradient, LSTMUnitGradientOp<CPUContext>);
-OPERATOR_SCHEMA(LSTMUnitGradient)
-    .NumInputs(8, 9)
-    .NumOutputs(3)
-    .Arg(
-        "sequence_lengths",
-        "When false, the sequence lengths input is left out, "
-        "and all following inputs are shifted left by one.");
 
 }

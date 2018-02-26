@@ -53,21 +53,6 @@ class PoolOp final : public ConvPoolOpBase<Context> {
   // Output: Y
 };
 
-template <typename T, class Context, class PoolType>
-class PoolGradientOp final : public ConvPoolOpBase<Context> {
- public:
-  USE_CONV_POOL_BASE_FUNCTIONS(Context);
-  PoolGradientOp(const OperatorDef& operator_def, Workspace* ws)
-      : ConvPoolOpBase<Context>(operator_def, ws) {}
-  ~PoolGradientOp() {}
-
-  bool RunOnDeviceWithOrderNCHW() override;
-  bool RunOnDeviceWithOrderNHWC() override;
-
-  // Input: X, Y, dY
-  // Output: dX
-};
-
 } // namespace caffe2
 
 #endif // CAFFE2_OPERATORS_POOL_OP_H_

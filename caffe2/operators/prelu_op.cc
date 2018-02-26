@@ -204,12 +204,4 @@ output data (Tensor<T>) where the function `f(x) = slope * x for x < 0`,
         "across different channels")
     .Output(0, "Y", "1D input tensor");
 
-// Input: Y, dY, output: dX
-OPERATOR_SCHEMA(PReluGradient).NumInputs(4).NumOutputs(2).SetDoc(R"DOC(
-
-PReluGradient takes both Y and dY and uses this to update dX and dW according
-to the chain rule and derivatives of the rectified linear function.
-
-)DOC");
-
 } // namespace caffe2

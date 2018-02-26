@@ -816,36 +816,6 @@ OPERATOR_SCHEMA(AveragePool)
     .TensorInferenceFunction(ConvPoolOpBase<CPUContext>::TensorInferenceForPool)
     .FillUsing(AveragePoolDocGenerator(""));
 
-REGISTER_CPU_OPERATOR(
-    AveragePool1D,
-    PoolOp<float, CPUContext, AveragePool<float>>);
-
-OPERATOR_SCHEMA(AveragePool1D)
-    .NumInputs(1)
-    .NumOutputs(1)
-    .TensorInferenceFunction(ConvPoolOpBase<CPUContext>::TensorInferenceForPool)
-    .FillUsing(AveragePoolDocGenerator("1D"));
-
-REGISTER_CPU_OPERATOR(
-    AveragePool2D,
-    PoolOp<float, CPUContext, AveragePool<float>>);
-
-OPERATOR_SCHEMA(AveragePool2D)
-    .NumInputs(1)
-    .NumOutputs(1)
-    .TensorInferenceFunction(ConvPoolOpBase<CPUContext>::TensorInferenceForPool)
-    .FillUsing(AveragePoolDocGenerator("2D"));
-
-REGISTER_CPU_OPERATOR(
-    AveragePool3D,
-    PoolOp<float, CPUContext, AveragePool<float>>);
-
-OPERATOR_SCHEMA(AveragePool3D)
-    .NumInputs(1)
-    .NumOutputs(1)
-    .TensorInferenceFunction(ConvPoolOpBase<CPUContext>::TensorInferenceForPool)
-    .FillUsing(AveragePoolDocGenerator("3D"));
-
 REGISTER_CPU_OPERATOR(MaxPool, PoolOp<float, CPUContext, MaxPool<float>>);
 
 OPERATOR_SCHEMA(MaxPool)
@@ -854,27 +824,4 @@ OPERATOR_SCHEMA(MaxPool)
     .TensorInferenceFunction(ConvPoolOpBase<CPUContext>::TensorInferenceForPool)
     .FillUsing(MaxPoolDocGenerator(""));
 
-REGISTER_CPU_OPERATOR(MaxPool1D, PoolOp<float, CPUContext, MaxPool<float>>);
-
-OPERATOR_SCHEMA(MaxPool1D)
-    .NumInputs(1)
-    .NumOutputs(1)
-    .TensorInferenceFunction(ConvPoolOpBase<CPUContext>::TensorInferenceForPool)
-    .FillUsing(MaxPoolDocGenerator("1D"));
-
-REGISTER_CPU_OPERATOR(MaxPool2D, PoolOp<float, CPUContext, MaxPool<float>>);
-
-OPERATOR_SCHEMA(MaxPool2D)
-    .NumInputs(1)
-    .NumOutputs(1)
-    .TensorInferenceFunction(ConvPoolOpBase<CPUContext>::TensorInferenceForPool)
-    .FillUsing(MaxPoolDocGenerator("2D"));
-
-REGISTER_CPU_OPERATOR(MaxPool3D, PoolOp<float, CPUContext, MaxPool<float>>);
-
-OPERATOR_SCHEMA(MaxPool3D)
-    .NumInputs(1)
-    .NumOutputs(1)
-    .TensorInferenceFunction(ConvPoolOpBase<CPUContext>::TensorInferenceForPool)
-    .FillUsing(MaxPoolDocGenerator("3D"));
 } // namespace caffe2
