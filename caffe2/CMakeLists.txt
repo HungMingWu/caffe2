@@ -9,10 +9,8 @@ add_subdirectory(proto)
 add_subdirectory(contrib)
 add_subdirectory(core)
 # add_subdirectory(experiments) # note, we may remove this folder at some point
-add_subdirectory(observers)
 add_subdirectory(operators)
 add_subdirectory(perfkernels)
-add_subdirectory(share)
 # add_subdirectory(test) # todo: use caffe2_gtest_main instead of gtest_main because we will need to call GlobalInit
 add_subdirectory(utils)
 
@@ -89,10 +87,4 @@ endif()
 # Binaries
 if (BUILD_BINARY)
   add_subdirectory(binaries)
-  # Benchmarking binaries require observers included in the build
-  # There is a linking issue that happens in some of the Windows builds.
-  # TODO(Yangqing): after the module redesign, enable this back.
-  if (BUILD_OBSERVERS AND NOT MSVC)
-    add_subdirectory(share/contrib/binaries)
-  endif()
 endif()
