@@ -52,7 +52,7 @@ install(FILES ${PROJECT_BINARY_DIR}/caffe2/core/macros.h
 # ---[ List of libraries to link with
 
 # Compile exposed libraries.
-add_library(caffe2 ${Caffe2_CPU_SRCS} $<TARGET_OBJECTS:Caffe_PROTO> $<TARGET_OBJECTS:Caffe2_PROTO>)
+add_library(caffe2 ${Caffe2_CPU_SRCS} $<TARGET_OBJECTS:Caffe2_PROTO>)
 target_link_libraries(caffe2 PUBLIC ${Caffe2_PUBLIC_DEPENDENCY_LIBS})
 target_link_libraries(caffe2 PRIVATE ${Caffe2_DEPENDENCY_LIBS})
 target_include_directories(caffe2 INTERFACE $<INSTALL_INTERFACE:include>)
