@@ -154,21 +154,6 @@ TEST(ObserverTest, TestNotifyAfterDetach) {
   EXPECT_EQ(0, count_after - count_before);
 }
 
-TEST(ObserverTest, TestDAGNetBase) {
-  auto count_before = counter.load();
-  Workspace ws;
-  ws.CreateBlob("in");
-  NetDef net_def;
-  unique_ptr<NetBase> net(CreateNetTestHelper(&ws, true));
-  EXPECT_EQ(caffe2::dynamic_cast_if_rtti<DAGNetBase*>(net.get()), net.get());
-  unique_ptr<DummyObserver<NetBase>> net_ob =
-      make_unique<DummyObserver<NetBase>>(net.get());
-  net.get()->AttachObserver(std::move(net_ob));
-  net.get()->Run();
-  auto count_after = counter.load();
-  EXPECT_EQ(1212, count_after - count_before);
-}
-
 TEST(ObserverTest, TestMultipleNetBase) {
   Workspace ws;
   ws.CreateBlob("in");
