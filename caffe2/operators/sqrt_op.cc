@@ -43,24 +43,4 @@ Computes the element-wise sqrt of the input.
   .Input(0, "X", "ND input tensor")
   .Output(0, "Y", "ND input tensor");
 
-class GetSqrtGradient : public GradientMakerBase {
-  using GradientMakerBase::GradientMakerBase;
-  vector<OperatorDef> GetGradientDefs() override {
-  Argument scale_arg;
-  scale_arg.set_name("scale");
-  scale_arg.set_f(0.5);
-  return vector<OperatorDef>{CreateOperatorDef(
-      "Scale",
-      "",
-      std::vector<string>{GO(0)},
-      std::vector<string>{GI(0)},
-      std::vector<Argument>{scale_arg}),
-  CreateOperatorDef(
-      "Div",
-      "",
-      std::vector<string>{GI(0), O(0)},
-      std::vector<string>{GI(0)})};
-  }
-};
-REGISTER_GRADIENT(Sqrt, GetSqrtGradient);
 } // namespace caffe2
