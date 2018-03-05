@@ -92,22 +92,4 @@ void RegisterTensorInfoFunction(CaffeTypeId id, TensorInfoCall c) {
   tensor_info_call_registry_[id] = c;
 }
 
-namespace {
-
-struct TensorCPUStatGetter : BlobStatGetter {
-  size_t sizeBytes(const Blob& blob) const override {
-    const auto& tensor = blob.Get<TensorCPU>();
-    auto nbytes = tensor.nbytes();
-    if (nbytes > 0 && tensor.IsType<std::string>()) {
-      const auto* data = tensor.data<std::string>();
-      for (size_t i = 0; i < tensor.size(); ++i) {
-        nbytes += data[i].size();
-      }
-    }
-    return nbytes;
-  }
-};
-REGISTER_BLOB_STAT_GETTER(TensorCPU, TensorCPUStatGetter);
-}
-
 } // namespace caffe2
