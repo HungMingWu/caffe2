@@ -119,7 +119,6 @@ class OperatorBase : public Observable<OperatorBase> {
   inline int OutputSize() { return outputs_.size(); }
   inline const vector<const Blob*>& Inputs() const { return inputs_; }
   inline const vector<Blob*>& Outputs() { return outputs_; }
-  vector<TensorShape> InputTensorShapes();
 
   virtual void WaitEvent(const Event& ev, int stream_id = -1) {
     ev.Finish();
@@ -803,20 +802,6 @@ using PerOpEnginePrefType =
     CaffeMap<int, CaffeMap<std::string, EnginePrefType>>;
 // {device_type -> EnginePrefType}
 using GlobalEnginePrefType = CaffeMap<int, EnginePrefType>;
-void SetPerOpEnginePref(const PerOpEnginePrefType& per_op_engine_pref);
-void SetGlobalEnginePref(const GlobalEnginePrefType& global_engine_pref);
-void SetEnginePref(
-    const PerOpEnginePrefType& per_op_engine_pref,
-    const GlobalEnginePrefType& global_engine_pref);
-void SetOpEnginePref(
-    const std::string& op_type,
-    const CaffeMap<int, EnginePrefType>& op_pref);
-
-TensorShape GetTensorShapeOfBlob(const Blob* b);
-
-std::map<string, std::pair<DeviceOption, DeviceOption>> ValidateTensorDevices(
-    OperatorBase& op,
-    const OperatorDef& op_def);
 
 }  // namespace caffe2
 

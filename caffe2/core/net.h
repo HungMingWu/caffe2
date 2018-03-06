@@ -54,27 +54,11 @@ class NetBase : public Observable<NetBase> {
   virtual ~NetBase() noexcept {}
 
   virtual bool SupportsAsync() = 0;
-  inline const vector<const Event*>& events() const {
-    return events_;
-  }
-
-  virtual void Wait() {
-    // by default just wait till all events are finished
-    for (const auto& event : events_) {
-      event->Finish();
-    }
-  }
 
   virtual bool Run() {
     if (!RunAsync()) {
       LOG(ERROR) << "Failed to execute async run";
       return false;
-    }
-    Wait();
-    for (const Event* event : events_) {
-      if (event->Query() != EventStatus::EVENT_SUCCESS) {
-        CAFFE_THROW(event->ErrorMessage());
-      }
     }
     return true;
   }
@@ -117,7 +101,6 @@ class NetBase : public Observable<NetBase> {
   vector<string> external_input_;
   vector<string> external_output_;
   string name_;
-  vector<const Event*> events_;
   std::shared_ptr<const NetDef> net_def_;
   DISABLE_COPY_AND_ASSIGN(NetBase);
 };

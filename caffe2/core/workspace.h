@@ -67,17 +67,7 @@ class Workspace {
   /**
    * Initializes an empty workspace.
    */
-  Workspace() : root_folder_("."), shared_(nullptr) {}
-
-  /**
-   * Initializes an empty workspace with the given root folder.
-   *
-   * For any operators that are going to interface with the file system, such
-   * as load operators, they will write things under this root folder given
-   * by the workspace.
-   */
-  explicit Workspace(const string& root_folder)
-      : root_folder_(root_folder), shared_(nullptr) {}
+  Workspace() : shared_(nullptr) {}
 
   /**
    * Initializes a workspace with a shared workspace.
@@ -89,85 +79,15 @@ class Workspace {
    * created workspace.
    */
   explicit Workspace(const Workspace* shared)
-      : root_folder_("."), shared_(shared) {}
-
-  /**
-   * Initializes workspace with parent workspace, blob name remapping
-   * (new name -> parent blob name), no other blobs are inherited from
-   * parent workspace
-   */
-  Workspace(
-      const Workspace* shared,
-      const std::unordered_map<string, string>& forwarded_blobs)
-      : root_folder_("."), shared_(nullptr) {
-    CAFFE_ENFORCE(shared, "Parent workspace must be specified");
-    for (const auto& forwarded : forwarded_blobs) {
-      CAFFE_ENFORCE(
-          shared->HasBlob(forwarded.second), "Invalid parent workspace blob");
-      forwarded_blobs_[forwarded.first] =
-          std::make_pair(shared, forwarded.second);
-    }
-  }
+      : shared_(shared) {}
 
   /**
    * Initializes a workspace with a root folder and a shared workspace.
    */
-  Workspace(const string& root_folder, Workspace* shared)
-      : root_folder_(root_folder), shared_(shared) {}
+  Workspace(Workspace* shared)
+      : shared_(shared) {}
 
-  ~Workspace() {
-    if (FLAGS_caffe2_print_blob_sizes_at_exit) {
-      PrintBlobSizes();
-    }
-  }
-
-  /**
-   * Adds blob mappings from workspace to the blobs from parent workspace.
-   * Creates blobs under possibly new names that redirect read/write operations
-   * to the blobs in the parent workspace.
-   * Arguments:
-   *  parent - pointer to parent workspace
-   *  forwarded_blobs - map from new blob name to blob name in parent's
-   * workspace skip_defined_blob - if set skips blobs with names that already
-   * exist in the workspace, otherwise throws exception
-   */
-  void AddBlobMapping(
-      const Workspace* parent,
-      const std::unordered_map<string, string>& forwarded_blobs,
-      bool skip_defined_blobs = false);
-
-  /**
-   * Converts prevously mapped tensor blobs to local blobs, copies values from
-   * parent workspace blobs into new local blobs. Ignores undefined blobs.
-   */
-  template <class Context>
-  void CopyForwardedTensors(const std::unordered_set<std::string>& blobs) {
-    for (const auto& blob : blobs) {
-      if (!forwarded_blobs_.count(blob)) {
-        continue;
-      }
-      const auto& ws_blob = forwarded_blobs_[blob];
-      const auto* parent_ws = ws_blob.first;
-      auto* from_blob = parent_ws->GetBlob(ws_blob.second);
-      CAFFE_ENFORCE(from_blob);
-      CAFFE_ENFORCE(
-          from_blob->template IsType<Tensor<Context>>(),
-          "Expected blob with tensor value",
-          ws_blob.second);
-      forwarded_blobs_.erase(blob);
-      auto* to_blob = CreateBlob(blob);
-      CAFFE_ENFORCE(to_blob);
-      const auto& from_tensor = from_blob->template Get<Tensor<Context>>();
-      auto* to_tensor = to_blob->template GetMutable<Tensor<Context>>();
-      to_tensor->CopyFrom(from_tensor);
-    }
-  }
-
-  /**
-   * Return list of blobs owned by this Workspace, not including blobs
-   * shared from parent workspace.
-   */
-  vector<string> LocalBlobs() const;
+  ~Workspace() = default;
 
   /**
    * Return a list of blob names. This may be a bit slow since it will involve
@@ -176,10 +96,6 @@ class Workspace {
    */
   vector<string> Blobs() const;
 
-  /**
-   * Return the root folder of the workspace.
-   */
-  const string& RootFolder() { return root_folder_; }
   /**
    * Checks if a blob with the given name is present in the current workspace.
    */
@@ -198,28 +114,12 @@ class Workspace {
     return false;
   }
 
-  void PrintBlobSizes();
-
   /**
    * Creates a blob of the given name. The pointer to the blob is returned, but
    * the workspace keeps ownership of the pointer. If a blob of the given name
    * already exists, the creation is skipped and the existing blob is returned.
    */
   Blob* CreateBlob(const string& name);
-  /**
-   * Similar to CreateBlob(), but it creates a blob in the local workspace even
-   * if another blob with the same name already exists in the parent workspace
-   * -- in such case the new blob hides the blob in parent workspace. If a blob
-   * of the given name already exists in the local workspace, the creation is
-   * skipped and the existing blob is returned.
-   */
-  Blob* CreateLocalBlob(const string& name);
-  /**
-   * Remove the blob of the given name. Return true if removed and false if
-   * not exist.
-   * Will NOT remove from the shared workspace.
-   */
-  bool RemoveBlob(const string& name);
   /**
    * Gets the blob with the given name as a const pointer. If the blob does not
    * exist, a nullptr is returned.
@@ -230,13 +130,6 @@ class Workspace {
    * not exist, a nullptr is returned.
    */
   Blob* GetBlob(const string& name);
-
-  /**
-   * Renames a local workspace blob. If blob is not found in the local blob list
-   * or if the target name is already present in local or any parent blob list
-   * the function will through.
-   */
-  Blob* RenameBlob(const string& old_name, const string& new_name);
 
   /**
    * Creates a network with the given NetDef, and returns the pointer to the
@@ -278,12 +171,6 @@ class Workspace {
     return names;
   }
 
-  /**
-   * Runs a plan that has multiple nets and execution steps.
-   */
-  bool RunPlan(const PlanDef& plan_def,
-               ShouldContinue should_continue = StopOnSignal{});
-
   // RunOperatorOnce and RunNetOnce runs an operator or net once. The difference
   // between RunNet and RunNetOnce lies in the fact that RunNet allows you to
   // have a persistent net object, while RunNetOnce creates a net and discards
@@ -298,7 +185,6 @@ class Workspace {
  private:
   BlobMap blob_map_;
   NetMap net_map_;
-  const string root_folder_;
   const Workspace* shared_;
   std::unordered_map<string, std::pair<const Workspace*, string>>
       forwarded_blobs_;

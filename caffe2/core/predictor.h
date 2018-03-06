@@ -27,11 +27,6 @@ namespace caffe2 {
 class Predictor {
  public:
   using TensorVector = std::vector<TensorCPU*>;
-  using TensorMap = std::unordered_map<std::string, TensorCPU*>;
-
-  // MetaNetDef contains 'init_net', 'run_net', and meta-info
-  // The meta-info is used to verify inputs are correctly passed
-  Predictor(const MetaNetDef& net, Workspace* parent = nullptr);
 
   // Runs the `init_net` once, then saves the `run_net` to be executed
   // in `::run`
@@ -53,9 +48,6 @@ class Predictor {
 
   // Returns true on success
   bool run(const TensorVector& inputs, TensorVector* outputs);
-
-  // Similar to run, but consumes a map of name to tensor as input
-  bool run_map(const TensorMap& inputs, TensorVector* outputs);
 
   const NetDef& def() const {
     return run_net_;

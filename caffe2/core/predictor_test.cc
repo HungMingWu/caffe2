@@ -201,42 +201,4 @@ TEST_F(PredictorTest, SimpleBatchSized) {
   EXPECT_NEAR(output.front()->data<float>()[4], 0.1209, 1E-4);
 }
 
-TEST_F(PredictorTest, SimpleBatchSizedMapInput) {
-  auto inputData = randomTensor({1, 4}, ctx_.get());
-  Predictor::TensorMap input{
-      {"data", inputData->template GetMutable<TensorCPU>()}};
-  Predictor::TensorVector output;
-  p_->run_map(input, &output);
-  EXPECT_EQ(output.size(), 1);
-  EXPECT_TRUE(output.front()->dims().size() == 2);
-  EXPECT_TRUE(output.front()->dim(0) == 1);
-  EXPECT_TRUE(output.front()->dim(1) == 10);
-  EXPECT_NEAR(output.front()->data<float>()[4], 0.1209, 1E-4);
-}
-
-class PredictorMetaNetDefTest : public testing::Test {
- public:
-  void SetUp() override {
-    DeviceOption op;
-    op.set_random_seed(1701);
-    ctx_ = caffe2::make_unique<CPUContext>(op);
-    p_ = caffe2::make_unique<Predictor>(parseMetaNetDef(metaSpec));
-  }
-
-  std::unique_ptr<CPUContext> ctx_;
-  std::unique_ptr<Predictor> p_;
-};
-
-TEST_F(PredictorMetaNetDefTest, SimpleMetaNetDefInitializer) {
-  auto inputData = randomTensor({1, 4}, ctx_.get());
-  Predictor::TensorMap input{
-      {"data", inputData->template GetMutable<TensorCPU>()}};
-  Predictor::TensorVector output;
-  p_->run_map(input, &output);
-  EXPECT_EQ(output.size(), 1);
-  EXPECT_TRUE(output.front()->dims().size() == 2);
-  EXPECT_TRUE(output.front()->dim(0) == 1);
-  EXPECT_TRUE(output.front()->dim(1) == 10);
-  EXPECT_NEAR(output.front()->data<float>()[4], 0.1209, 1E-4);
-}
 } // namespace caffe2

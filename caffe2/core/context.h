@@ -28,8 +28,6 @@
 #include "caffe2/core/typeid.h"
 #include "caffe2/proto/caffe2.pb.h"
 
-CAFFE2_DECLARE_bool(caffe2_report_cpu_memory_usage);
-
 namespace caffe2 {
 
 /**
@@ -115,15 +113,6 @@ class CPUContext final {
     return *random_generator_.get();
   }
 
-  static std::pair<void*, MemoryDeleter> New(size_t nbytes) {
-    auto data_and_deleter = GetCPUAllocator()->New(nbytes);
-    if (FLAGS_caffe2_report_cpu_memory_usage) {
-      reporter_.New(data_and_deleter.first, nbytes);
-      data_and_deleter.second = ReportAndDelete;
-    }
-    return data_and_deleter;
-  }
-
   // Two copy functions that deals with cross-device copies.
   template <class SrcContext, class DstContext>
   inline void CopyBytes(size_t nbytes, const void* src, void* dst);
@@ -171,13 +160,6 @@ class CPUContext final {
   // TODO(jiayq): instead of hard-coding a generator, make it more flexible.
   int random_seed_{1701};
   std::unique_ptr<rand_gen_type> random_generator_;
-  CAFFE2_API static MemoryAllocationReporter reporter_;
-
- private:
-  static void ReportAndDelete(void* ptr) {
-    reporter_.Delete(ptr);
-    GetCPUAllocator()->GetDeleter()(ptr);
-  }
 };
 
 template<>

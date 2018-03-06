@@ -549,18 +549,19 @@ class Tensor {
         // destruction procedure.
         auto size = size_;
         auto dtor = meta_.dtor();
-        auto ptr_and_deleter = Context::New(size_ * meta_.itemsize());
-        auto deleter = ptr_and_deleter.second;
+        auto ptr = new char[size_ * meta_.itemsize()];
         data_.reset(
-            ptr_and_deleter.first, [size, dtor, deleter](void* ptr) -> void {
+            ptr, [size, dtor](char* ptr) -> void {
               dtor(ptr, size);
-              deleter(ptr);
+              delete [] ptr;
             });
         meta_.ctor()(data_.get(), size_);
       } else {
         // For fundamental type, new and delete is easier.
-        auto ptr_and_deleter = Context::New(size_ * meta_.itemsize());
-        data_.reset(ptr_and_deleter.first, ptr_and_deleter.second);
+        auto ptr = new char[size_ * meta_.itemsize()];
+        data_.reset(ptr, [](char *ptr) -> void {
+            delete [] ptr;
+	});
       }
       capacity_ = size_ * meta_.itemsize();
       return data_.get();

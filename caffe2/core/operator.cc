@@ -65,14 +65,6 @@ OperatorBase::OperatorBase(const OperatorDef& operator_def, Workspace* ws)
   }
 }
 
-vector<TensorShape> OperatorBase::InputTensorShapes() {
-  vector<TensorShape> tps;
-  for (const auto& blob : inputs_) {
-    tps.push_back(GetTensorShapeOfBlob(blob));
-  }
-  return tps;
-}
-
 namespace {
 
 PerOpEnginePrefType& g_per_op_engine_pref() {
@@ -203,70 +195,6 @@ const std::string OpRegistryKey(
   }
 }
 
-void SetPerOpEnginePref(const PerOpEnginePrefType& per_op_engine_pref) {
-  for (const auto& device_pref_pair : per_op_engine_pref) {
-    const auto& device_type = device_pref_pair.first;
-    CAFFE_ENFORCE(
-        gDeviceTypeRegistry()->count(device_type),
-        "Device type ",
-        device_type,
-        " not registered.");
-    auto* registry = gDeviceTypeRegistry()->at(device_type);
-
-    for (const auto& op_pref_pair : device_pref_pair.second) {
-      const auto& op_type = op_pref_pair.first;
-      CAFFE_ENFORCE(
-          registry->Has(op_type),
-          "Operator type ",
-          op_type,
-          " not registered in ",
-          device_type,
-          " registry.");
-    }
-  }
-  g_per_op_engine_pref() = per_op_engine_pref;
-}
-
-void SetGlobalEnginePref(const GlobalEnginePrefType& global_engine_pref) {
-  for (const auto& device_pref_pair : global_engine_pref) {
-    const auto& device_type = device_pref_pair.first;
-    CAFFE_ENFORCE(
-        gDeviceTypeRegistry()->count(device_type),
-        "Device type ",
-        device_type,
-        " not registered.");
-  }
-  g_global_engine_pref() = global_engine_pref;
-}
-
-void SetEnginePref(
-    const PerOpEnginePrefType& per_op_engine_pref,
-    const GlobalEnginePrefType& global_engine_pref) {
-  SetPerOpEnginePref(per_op_engine_pref);
-  SetGlobalEnginePref(global_engine_pref);
-}
-
-void SetOpEnginePref(
-    const std::string& op_type,
-    const CaffeMap<int, EnginePrefType>& op_pref) {
-  for (const auto& device_pref_pair : op_pref) {
-    const auto& device_type = device_pref_pair.first;
-    CAFFE_ENFORCE(
-        gDeviceTypeRegistry()->count(device_type),
-        "Device type ",
-        device_type,
-        " not registered.");
-    CAFFE_ENFORCE(
-        gDeviceTypeRegistry()->at(device_type)->Has(op_type),
-        "Operator type ",
-        op_type,
-        " not registered in ",
-        device_type,
-        " registry.");
-    g_per_op_engine_pref()[device_type][op_type] = device_pref_pair.second;
-  }
-}
-
 unique_ptr<OperatorBase> CreateOperator(
     const OperatorDef& operator_def,
     Workspace* ws,
@@ -305,73 +233,5 @@ CAFFE_DEFINE_REGISTRY(
     const OperatorDef&,
     Workspace*);
 CAFFE_REGISTER_DEVICE_TYPE(DeviceType::CUDA, CUDAOperatorRegistry);
-
-TensorShape GetTensorShapeOfBlob(const Blob* b) {
-  TypeCall type_fun = GetTypeCallFunction(b->meta().id());
-  TensorInfoCall tensor_info_fun = GetTensorInfoFunction(b->meta().id());
-  TensorShape tp;
-
-  if (type_fun) {
-    tp.set_data_type(TypeMetaToDataType(type_fun(b->GetRaw())));
-  }
-  if (tensor_info_fun) {
-    bool _shares_data;
-    size_t _capacity;
-    DeviceOption _device;
-    auto shape =
-        tensor_info_fun(b->GetRaw(), &_shares_data, &_capacity, &_device);
-    for (auto d : shape) {
-      tp.add_dims(d);
-    }
-  } else {
-    tp.set_unknown_shape(true);
-  }
-  return tp;
-}
-
-std::map<string, std::pair<DeviceOption, DeviceOption>> ValidateTensorDevices(
-    OperatorBase& op,
-    const OperatorDef& op_def) {
-  std::map<string, std::pair<DeviceOption, DeviceOption>> mismatches;
-  DeviceOption op_device = op_def.device_option();
-
-#ifndef CAFFE2_NO_OPERATOR_SCHEMA
-  // Check from op schema if this op is used for crossing devices
-  auto op_schema = OpSchemaRegistry::Schema(op_def.type());
-  if (op_schema != nullptr) {
-    if (op_schema->inputs_can_cross_devices()) {
-      return mismatches;
-    }
-  }
-#endif // CAFFE2_NO_OPERATOR_SCHEMA
-
-  auto Check = [&](const Blob& blob, std::string blob_name) {
-    TensorInfoCall tensor_info_fun = GetTensorInfoFunction(blob.meta().id());
-    if (tensor_info_fun) {
-      bool _shares_data;
-      size_t _capacity;
-      DeviceOption blob_device;
-      tensor_info_fun(
-          const_cast<Blob&>(blob).GetRaw(),
-          &_shares_data,
-          &_capacity,
-          &blob_device);
-
-      if (blob_device.device_type() == CUDA &&
-          blob_device.cuda_gpu_id() != op_device.cuda_gpu_id()) {
-        mismatches[blob_name] = std::make_pair(op_device, blob_device);
-      }
-    }
-  };
-
-  // Check that inputs have same device type as the op
-  for (int i = 0; i < op.InputSize(); i++) {
-    Check(op.InputBlob(i), op_def.input(i));
-  }
-  for (int i = 0; i < op.OutputSize(); i++) {
-    Check(*op.OutputBlob(i), op_def.output(i));
-  }
-  return mismatches;
-}
 
 }  // namespace caffe2
