@@ -16,7 +16,6 @@
 
 #include "caffe2/core/tensor.h"
 
-#include "caffe2/core/blob_stats.h"
 #include "caffe2/core/flags.h"
 
 CAFFE2_DEFINE_bool(
